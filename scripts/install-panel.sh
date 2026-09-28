@@ -15,12 +15,21 @@
 #   卸载：  sudo bash install-panel.sh --uninstall
 #
 # 项目地址: https://github.com/VipMaxxxx/payincus
+#
+# 部署到 fork 或私有仓库时，可用环境变量覆盖产物包来源与 OTA 白名单，例如：
+#   GITHUB_REPO=<你的组织>/payincus \
+#   INCUDAL_TRUSTED_GIT_ORIGIN=https://github.com/<你的组织>/payincus.git \
+#   sudo bash install-panel.sh
 # ============================================================================
 set -euo pipefail
 
 # ========================== 全局常量 ==========================
 readonly SCRIPT_VERSION="3.0.0"
-readonly GITHUB_REPO="VipMaxxxx/payincus"
+readonly GITHUB_REPO="${GITHUB_REPO:-VipMaxxxx/payincus}"
+
+# OTA 回退到源码构建时校验的 Git origin，必须与 root helper 的判定一致。
+# 默认派生自 GITHUB_REPO；显式设置时以 INCUDAL_TRUSTED_GIT_ORIGIN 为准。
+readonly TRUSTED_GIT_ORIGIN="${INCUDAL_TRUSTED_GIT_ORIGIN:-https://github.com/${GITHUB_REPO}.git}"
 readonly INSTALL_DIR="/opt/incudal"
 readonly SERVICE_NAME="incudal-backend"
 readonly SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
@@ -820,13 +829,14 @@ configure_git_metadata() {
 
     if [[ -d "${INSTALL_DIR}/.git" ]]; then
         git remote get-url origin >/dev/null 2>&1 && \
-            git remote set-url origin "https://github.com/${GITHUB_REPO}.git" || \
-            git remote add origin "https://github.com/${GITHUB_REPO}.git"
+            git remote set-url origin "$TRUSTED_GIT_ORIGIN" || \
+            git remote add origin "$TRUSTED_GIT_ORIGIN"
     else
         git init -q
-        git remote add origin "https://github.com/${GITHUB_REPO}.git" 2>/dev/null || \
-            git remote set-url origin "https://github.com/${GITHUB_REPO}.git" 2>/dev/null || true
+        git remote add origin "$TRUSTED_GIT_ORIGIN" 2>/dev/null || \
+            git remote set-url origin "$TRUSTED_GIT_ORIGIN" 2>/dev/null || true
     fi
+    log "OTA Git origin: ${TRUSTED_GIT_ORIGIN}"
 
     git config --global --add safe.directory "$INSTALL_DIR" 2>/dev/null || true
     sudo -u "$RUN_USER" HOME="$INSTALL_DIR" git config --global --add safe.directory "$INSTALL_DIR" 2>/dev/null || true
@@ -1095,6 +1105,9 @@ Environment=HOME=${INSTALL_DIR}
 Environment=NPM_CONFIG_CACHE=${INSTALL_DIR}/.npm
 Environment=XDG_CACHE_HOME=${INSTALL_DIR}/.cache
 Environment=PATH=/usr/local/libexec/incudal:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# root helper 的 OTA Git origin 白名单，部署到 fork 时必须与部署仓库一致
+Environment=INCUDAL_TRUSTED_GIT_ORIGIN=${TRUSTED_GIT_ORIGIN}
 
 # 启动前自动执行数据库迁移
 ExecStartPre=/usr/bin/bash -c 'cd ${app_dir}/server && pnpm exec prisma migrate deploy'

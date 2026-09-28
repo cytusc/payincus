@@ -10,6 +10,10 @@ readonly HELPER_DIR="/usr/local/libexec/incudal"
 readonly SYSTEM_PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 readonly OTA_PATH="${HELPER_DIR}/ota-path:${SYSTEM_PATH}"
 
+# OTA 只允许从白名单里的 Git origin 回退到源码构建。部署到 fork 或私有仓库时，由运维在
+# systemd 单元显式声明 INCUDAL_TRUSTED_GIT_ORIGIN；未声明时保持上游仓库，行为与旧版本一致。
+readonly TRUSTED_GIT_ORIGIN="${INCUDAL_TRUSTED_GIT_ORIGIN:-https://github.com/VipMaxxxx/payincus.git}"
+
 fail() {
   echo "incudal online task: $*" >&2
   exit 1
@@ -140,7 +144,7 @@ verify_git_control() {
   fi
   local origin
   origin="$(/usr/bin/git -C "$INSTALL_DIR" remote get-url origin 2>/dev/null)" || fail "Git origin is missing"
-  [[ "$origin" == "https://github.com/VipMaxxxx/payincus.git" ]] || fail "Git origin is not the trusted repository"
+  [[ "$origin" == "$TRUSTED_GIT_ORIGIN" ]] || fail "Git origin is not the trusted repository (expected ${TRUSTED_GIT_ORIGIN})"
   if /usr/bin/git -C "$INSTALL_DIR" config --local --get-regexp \
       '^(core\.hooksPath|core\.fsmonitor|filter\..*\.(clean|smudge|process)|diff\..*\.command)$' \
       >/dev/null 2>&1; then

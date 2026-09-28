@@ -245,6 +245,12 @@ assert.ok(
   'fixed root helper must enforce root ownership and verify release integrity before Node execution'
 )
 assert.ok(
+  onlineTaskHelper.includes('readonly TRUSTED_GIT_ORIGIN="${INCUDAL_TRUSTED_GIT_ORIGIN:-https://github.com/VipMaxxxx/payincus.git}"') &&
+    onlineTaskHelper.includes('[[ "$origin" == "$TRUSTED_GIT_ORIGIN" ]]') &&
+    !onlineTaskHelper.includes('[[ "$origin" == "https://github.com/VipMaxxxx/payincus.git" ]]'),
+  'root helper must decide the OTA Git origin allowlist from INCUDAL_TRUSTED_GIT_ORIGIN, never from a hardcoded owner-only comparison'
+)
+assert.ok(
   installPanel.includes('install_verified_root_helpers_from_archive "$tar_file"') &&
     installPanel.includes('install -o root -g root -m 0440 "$sudoers_tmp" /etc/sudoers.d/incudal-online-update') &&
     installPanel.includes('${RUN_USER} ALL=(root) NOPASSWD: /usr/local/libexec/incudal/systemctl start --no-block incudal-online-update@*.service') &&
@@ -330,9 +336,15 @@ assert.ok(
 assert.ok(readme.includes('INCUDAL_AGENT_RELEASE_REPOSITORY=VipMaxxxx/payincus'), 'README must document the current Agent release repository')
 assert.ok(backendServiceExample.includes('Documentation=https://github.com/VipMaxxxx/payincus'), 'systemd backend example must point documentation to the current repository')
 assert.ok(
-  installPanel.includes('readonly GITHUB_REPO="VipMaxxxx/payincus"') &&
-    installPanel.includes('# 项目地址: https://github.com/VipMaxxxx/payincus'),
-  'install script must download panel releases from the current repository'
+  installPanel.includes('readonly GITHUB_REPO="${GITHUB_REPO:-VipMaxxxx/payincus}"') &&
+    installPanel.includes('# 项目地址: https://github.com/'),
+  'install script must download panel releases from the current repository and allow forks to override it via GITHUB_REPO'
+)
+assert.ok(
+  installPanel.includes('readonly TRUSTED_GIT_ORIGIN="${INCUDAL_TRUSTED_GIT_ORIGIN:-https://github.com/${GITHUB_REPO}.git}"') &&
+    installPanel.includes('git remote set-url origin "$TRUSTED_GIT_ORIGIN"') &&
+    installPanel.includes('Environment=INCUDAL_TRUSTED_GIT_ORIGIN=${TRUSTED_GIT_ORIGIN}'),
+  'install script must keep the OTA Git origin allowlist in sync with the deployment repository and pass it to the root helper'
 )
 assert.ok(verifySplitHost.includes('fetch_url "frontend proxied API" "$FRONTEND_URL/api/health"'), 'split verify script must verify frontend /api proxy')
 assert.ok(
