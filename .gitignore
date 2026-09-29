@@ -111,3 +111,4 @@ SDK/
 !docs-site/docs/public/sdk/**
 SDKNEW/
 namecrane_modules/
+.workbuddy/
