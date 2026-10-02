@@ -7,7 +7,7 @@ This is the operational handoff for engineers or agents taking over PayIncus / I
 ## Current Baseline
 
 - Active worktree: `/Users/max/.codex/worktrees/payincus-release-v133`
-- GitHub repository: `VipMaxxxx/payincus`
+- GitHub repository: `cytusc/payincus`
 - Git remote name in this worktree: `payincus`
 - Production install root: `/opt/incudal`
 - Production current symlink: `/opt/incudal/current`
@@ -167,7 +167,7 @@ After pushing, wait for all relevant workflows for the release commit:
 If `gh` is available:
 
 ```bash
-gh run list --repo VipMaxxxx/payincus --limit 10
+gh run list --repo cytusc/payincus --limit 10
 ```
 
 If `gh` is not available, use the GitHub API:
@@ -175,7 +175,7 @@ If `gh` is not available, use the GitHub API:
 ```bash
 node - <<'NODE'
 const sha = '<full-release-commit-sha>'
-const res = await fetch(`https://api.github.com/repos/VipMaxxxx/payincus/actions/runs?head_sha=${sha}&per_page=20`, {
+const res = await fetch(`https://api.github.com/repos/cytusc/payincus/actions/runs?head_sha=${sha}&per_page=20`, {
   headers: { 'User-Agent': 'payincus-release-check' },
 })
 const data = await res.json()
@@ -190,7 +190,7 @@ Check the GitHub Release and OTA manifest:
 ```bash
 node - <<'NODE'
 const version = 'vX.Y.Z'
-const release = await fetch(`https://api.github.com/repos/VipMaxxxx/payincus/releases/tags/${version}`, {
+const release = await fetch(`https://api.github.com/repos/cytusc/payincus/releases/tags/${version}`, {
   headers: { 'User-Agent': 'payincus-release-check' },
 })
 console.log(release.status, release.statusText)
@@ -201,7 +201,7 @@ console.log(JSON.stringify({
   assets: (data.assets || []).map(a => ({ name: a.name, size: a.size })),
 }, null, 2))
 
-const manifest = await fetch(`https://github.com/VipMaxxxx/payincus/releases/download/${version}/ota-manifest.json`, {
+const manifest = await fetch(`https://github.com/cytusc/payincus/releases/download/${version}/ota-manifest.json`, {
   headers: { 'User-Agent': 'payincus-release-check' },
 })
 console.log(await manifest.text())

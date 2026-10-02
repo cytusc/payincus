@@ -32,7 +32,7 @@ description: 使用经过校验的 GitHub Release 在 Debian 或 Ubuntu 上部�
 ## 安装命令
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/VipMaxxxx/payincus/main/scripts/install-panel.sh -o install-panel.sh
+curl -fsSL https://raw.githubusercontent.com/cytusc/payincus/main/scripts/install-panel.sh -o install-panel.sh
 sudo bash install-panel.sh
 ```
 

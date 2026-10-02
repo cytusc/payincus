@@ -74,7 +74,7 @@ description: PayIncus deployment, operations, development, and OTA documentation
       <p>Source, community, and demo environment.</p>
     </div>
     <div class="docs-home-links">
-      <a class="docs-home-link" href="https://github.com/VipMaxxxx/payincus"><span class="docs-home-link-index">GH</span><span><strong>GitHub</strong><small>Source, Releases, and issue tracking.</small></span></a>
+      <a class="docs-home-link" href="https://github.com/cytusc/payincus"><span class="docs-home-link-index">GH</span><span><strong>GitHub</strong><small>Source, Releases, and issue tracking.</small></span></a>
       <a class="docs-home-link" href="https://t.me/Payincus"><span class="docs-home-link-index">TG</span><span><strong>Telegram</strong><small>Join the PayIncus project group.</small></span></a>
       <a class="docs-home-link" href="/en/demo"><span class="docs-home-link-index">DE</span><span><strong>Live Demo</strong><small>Demo accounts and read-only limitations.</small></span></a>
     </div>

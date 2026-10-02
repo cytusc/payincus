@@ -32,7 +32,7 @@ The default install directory is `/opt/incudal`. This is the real path used by t
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/VipMaxxxx/payincus/main/scripts/install-panel.sh -o install-panel.sh
+curl -fsSL https://raw.githubusercontent.com/cytusc/payincus/main/scripts/install-panel.sh -o install-panel.sh
 sudo bash install-panel.sh
 ```
 

@@ -14,7 +14,7 @@
 #   升级：  sudo bash install-panel.sh --upgrade
 #   卸载：  sudo bash install-panel.sh --uninstall
 #
-# 项目地址: https://github.com/VipMaxxxx/payincus
+# 项目地址: https://github.com/cytusc/payincus
 #
 # 部署到 fork 或私有仓库时，可用环境变量覆盖产物包来源与 OTA 白名单，例如：
 #   GITHUB_REPO=<你的组织>/payincus \
@@ -25,7 +25,7 @@ set -euo pipefail
 
 # ========================== 全局常量 ==========================
 readonly SCRIPT_VERSION="3.0.0"
-readonly GITHUB_REPO="${GITHUB_REPO:-VipMaxxxx/payincus}"
+readonly GITHUB_REPO="${GITHUB_REPO:-cytusc/payincus}"
 
 # OTA 回退到源码构建时校验的 Git origin，必须与 root helper 的判定一致。
 # 默认派生自 GITHUB_REPO；显式设置时以 INCUDAL_TRUSTED_GIT_ORIGIN 为准。

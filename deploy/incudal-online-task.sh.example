@@ -11,8 +11,8 @@ readonly SYSTEM_PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/b
 readonly OTA_PATH="${HELPER_DIR}/ota-path:${SYSTEM_PATH}"
 
 # OTA 只允许从白名单里的 Git origin 回退到源码构建。部署到 fork 或私有仓库时，由运维在
-# systemd 单元显式声明 INCUDAL_TRUSTED_GIT_ORIGIN；未声明时保持上游仓库，行为与旧版本一致。
-readonly TRUSTED_GIT_ORIGIN="${INCUDAL_TRUSTED_GIT_ORIGIN:-https://github.com/VipMaxxxx/payincus.git}"
+# systemd 单元显式声明 INCUDAL_TRUSTED_GIT_ORIGIN；未声明时使用当前项目仓库。
+readonly TRUSTED_GIT_ORIGIN="${INCUDAL_TRUSTED_GIT_ORIGIN:-https://github.com/cytusc/payincus.git}"
 
 fail() {
   echo "incudal online task: $*" >&2

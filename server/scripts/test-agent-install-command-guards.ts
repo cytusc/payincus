@@ -35,7 +35,7 @@ assert.ok(
 )
 
 assert.ok(
-  agentRouteSource.includes("const defaultAgentReleaseRepository = 'VipMaxxxx/payincus'"),
+  agentRouteSource.includes("const defaultAgentReleaseRepository = 'cytusc/payincus'"),
   'Agent release proxy must default to the current repository'
 )
 assert.ok(

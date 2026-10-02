@@ -245,9 +245,9 @@ assert.ok(
   'fixed root helper must enforce root ownership and verify release integrity before Node execution'
 )
 assert.ok(
-  onlineTaskHelper.includes('readonly TRUSTED_GIT_ORIGIN="${INCUDAL_TRUSTED_GIT_ORIGIN:-https://github.com/VipMaxxxx/payincus.git}"') &&
+  onlineTaskHelper.includes('readonly TRUSTED_GIT_ORIGIN="${INCUDAL_TRUSTED_GIT_ORIGIN:-https://github.com/cytusc/payincus.git}"') &&
     onlineTaskHelper.includes('[[ "$origin" == "$TRUSTED_GIT_ORIGIN" ]]') &&
-    !onlineTaskHelper.includes('[[ "$origin" == "https://github.com/VipMaxxxx/payincus.git" ]]'),
+    !onlineTaskHelper.includes('[[ "$origin" == "https://github.com/cytusc/payincus.git" ]]'),
   'root helper must decide the OTA Git origin allowlist from INCUDAL_TRUSTED_GIT_ORIGIN, never from a hardcoded owner-only comparison'
 )
 assert.ok(
@@ -333,10 +333,10 @@ assert.ok(
     agentReleaseSmoke.includes('INVALID_AGENT_BINARY_NAME'),
   'Agent release smoke must cover install script serving and deterministic binary download rejection paths'
 )
-assert.ok(readme.includes('INCUDAL_AGENT_RELEASE_REPOSITORY=VipMaxxxx/payincus'), 'README must document the current Agent release repository')
-assert.ok(backendServiceExample.includes('Documentation=https://github.com/VipMaxxxx/payincus'), 'systemd backend example must point documentation to the current repository')
+assert.ok(readme.includes('INCUDAL_AGENT_RELEASE_REPOSITORY=cytusc/payincus'), 'README must document the current Agent release repository')
+assert.ok(backendServiceExample.includes('Documentation=https://github.com/cytusc/payincus'), 'systemd backend example must point documentation to the current repository')
 assert.ok(
-  installPanel.includes('readonly GITHUB_REPO="${GITHUB_REPO:-VipMaxxxx/payincus}"') &&
+  installPanel.includes('readonly GITHUB_REPO="${GITHUB_REPO:-cytusc/payincus}"') &&
     installPanel.includes('# 项目地址: https://github.com/'),
   'install script must download panel releases from the current repository and allow forks to override it via GITHUB_REPO'
 )

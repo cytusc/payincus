@@ -11,7 +11,7 @@
   ·
   <a href="https://t.me/Payincus">Telegram</a>
   ·
-  <a href="https://github.com/VipMaxxxx/payincus/releases">Releases</a>
+  <a href="https://github.com/cytusc/payincus/releases">Releases</a>
 </p>
 
 ## 项目定位
@@ -20,7 +20,7 @@ PayIncus 是一套面向 hosting 业务的 Incus 商业化交付平台。它把�
 
 PayIncus 的公开文档、源码和 Release 都以当前仓库为准：
 
-- 项目仓库：<https://github.com/VipMaxxxx/payincus>
+- 项目仓库：<https://github.com/cytusc/payincus>
 - 文档站：<https://payincus.com>
 - 在线 Demo：<https://payincus.com/demo>
 - API 参考：<https://payincus.com/api/overview>
@@ -92,7 +92,7 @@ PayIncus 生产环境推荐非 Docker split 部署：用户端、管理端和后
 ## 一键安装
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/VipMaxxxx/payincus/main/scripts/install-panel.sh -o install-panel.sh
+curl -fsSL https://raw.githubusercontent.com/cytusc/payincus/main/scripts/install-panel.sh -o install-panel.sh
 sudo bash install-panel.sh
 ```
 
@@ -217,9 +217,9 @@ PayIncus 管理后台提供系统更新页面，接口前缀为 `/api/admin/syst
 SYSTEM_UPDATE_ALLOWED_ADMIN_IDS=1
 SYSTEM_UPDATE_LOG_DIR=/opt/incudal/update-logs
 SYSTEM_UPDATE_STARTED_BY_USER_ID=1
-SYSTEM_UPDATE_RELEASE_REPOSITORY=VipMaxxxx/payincus
+SYSTEM_UPDATE_RELEASE_REPOSITORY=cytusc/payincus
 SYSTEM_UPDATE_APPLY_MODE=auto
-INCUDAL_AGENT_RELEASE_REPOSITORY=VipMaxxxx/payincus
+INCUDAL_AGENT_RELEASE_REPOSITORY=cytusc/payincus
 ```
 
 原子 OTA 布局：

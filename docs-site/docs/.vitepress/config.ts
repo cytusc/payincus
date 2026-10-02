@@ -29,7 +29,7 @@ const zhNav = [
       { text: '在线 Demo', link: '/demo' },
       { text: '版本日志', link: '/release/version-log' },
       { text: 'Telegram 交流群', link: 'https://t.me/Payincus' },
-      { text: 'GitHub', link: 'https://github.com/VipMaxxxx/payincus' }
+      { text: 'GitHub', link: 'https://github.com/cytusc/payincus' }
     ]
   }
 ]
@@ -44,7 +44,7 @@ const enNav = [
       { text: 'Demo', link: '/en/demo' },
       { text: 'Version Log', link: '/en/release/version-log' },
       { text: 'Telegram Group', link: 'https://t.me/Payincus' },
-      { text: 'GitHub', link: 'https://github.com/VipMaxxxx/payincus' }
+      { text: 'GitHub', link: 'https://github.com/cytusc/payincus' }
     ]
   }
 ]
@@ -343,7 +343,7 @@ export default defineConfig({
       themeConfig: {
         nav: zhNav,
         editLink: {
-          pattern: 'https://github.com/VipMaxxxx/payincus/edit/main/docs-site/docs/:path',
+          pattern: 'https://github.com/cytusc/payincus/edit/main/docs-site/docs/:path',
           text: '在 GitHub 上编辑此页'
         },
         lastUpdated: {
@@ -371,7 +371,7 @@ export default defineConfig({
       themeConfig: {
         nav: enNav,
         editLink: {
-          pattern: 'https://github.com/VipMaxxxx/payincus/edit/main/docs-site/docs/:path',
+          pattern: 'https://github.com/cytusc/payincus/edit/main/docs-site/docs/:path',
           text: 'Edit this page on GitHub'
         },
         lastUpdated: {
@@ -399,7 +399,7 @@ export default defineConfig({
       provider: 'local'
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/VipMaxxxx/payincus' }
+      { icon: 'github', link: 'https://github.com/cytusc/payincus' }
     ],
     footer: {
       message: 'PayIncus documentation',

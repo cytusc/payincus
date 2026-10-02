@@ -74,7 +74,7 @@ description: PayIncus 部署、运营、开发与 OTA 文档
       <p>源码、交流与在线环境。</p>
     </div>
     <div class="docs-home-links">
-      <a class="docs-home-link" href="https://github.com/VipMaxxxx/payincus"><span class="docs-home-link-index">GH</span><span><strong>GitHub</strong><small>查看源码、Release 和问题记录。</small></span></a>
+      <a class="docs-home-link" href="https://github.com/cytusc/payincus"><span class="docs-home-link-index">GH</span><span><strong>GitHub</strong><small>查看源码、Release 和问题记录。</small></span></a>
       <a class="docs-home-link" href="https://t.me/Payincus"><span class="docs-home-link-index">TG</span><span><strong>Telegram</strong><small>加入 PayIncus 项目交流群。</small></span></a>
       <a class="docs-home-link" href="/demo"><span class="docs-home-link-index">DE</span><span><strong>在线 Demo</strong><small>了解演示环境的账号和只读限制。</small></span></a>
     </div>

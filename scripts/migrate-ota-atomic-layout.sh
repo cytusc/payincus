@@ -4,7 +4,7 @@ set -Eeuo pipefail
 INSTALL_DIR="${INSTALL_DIR:-/opt/incudal}"
 SERVICE_NAME="${SERVICE_NAME:-incudal-backend}"
 RUN_USER="${RUN_USER:-incudal}"
-GITHUB_REPO="${GITHUB_REPO:-VipMaxxxx/payincus}"
+GITHUB_REPO="${GITHUB_REPO:-cytusc/payincus}"
 VERIFIED_RELEASE_ARCHIVE="${VERIFIED_RELEASE_ARCHIVE:-}"
 
 log() {
