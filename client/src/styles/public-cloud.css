@@ -1,0 +1,61 @@
+/* Local public-page tokens: deliberately independent of the console theme. */
+.cloud-public-theme {
+  --kawaii-bg: #fff;
+  --kawaii-surface: #fff;
+  --kawaii-surface-soft: #f5f5f5;
+  --kawaii-text: #000;
+  --kawaii-muted: #666;
+  --kawaii-faint: #737373;
+  --kawaii-line: #e5e5e5;
+  --kawaii-line-strong: #ccc;
+  --kawaii-primary: #000;
+  --kawaii-primary-strong: #333;
+  --kawaii-lavender: #000;
+  --kawaii-pink: #000;
+  --kawaii-shadow: 0 8px 32px rgb(0 0 0 / .04);
+  --bg-primary: var(--kawaii-bg);
+  --bg-secondary: var(--kawaii-surface-soft);
+  --bg-elevated: var(--kawaii-surface);
+  --text-primary: var(--kawaii-text);
+  --text-secondary: var(--kawaii-muted);
+  --border-color: var(--kawaii-line);
+  color: var(--kawaii-text);
+  background: var(--kawaii-bg);
+  font-family: 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+.dark .cloud-public-theme {
+  --kawaii-bg: #000;
+  --kawaii-surface: #000;
+  --kawaii-surface-soft: #171717;
+  --kawaii-text: #fff;
+  --kawaii-muted: #aaa;
+  --kawaii-faint: #999;
+  --kawaii-line: #292929;
+  --kawaii-line-strong: #555;
+  --kawaii-primary: #fff;
+  --kawaii-primary-strong: #ddd;
+  --kawaii-lavender: #fff;
+  --kawaii-pink: #fff;
+}
+.cloud-public-theme :is(a, button, input, select):focus-visible { outline: 2px solid var(--kawaii-text); outline-offset: 4px; }
+.cloud-public-theme .cloud-button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 48px; padding: 12px 24px; border-radius: 9px; border: 1px solid var(--kawaii-text);
+  background: var(--kawaii-text); color: var(--kawaii-bg); font-size: 14px; font-weight: 600;
+}
+.cloud-public-theme .cloud-button:hover { opacity: .8; }
+.cloud-public-theme .cloud-button-secondary { background: transparent; color: var(--kawaii-text); border-color: var(--kawaii-line-strong); }
+.cloud-public-theme .kawaii-public-header .kawaii-header-cta,
+.cloud-public-theme .kawaii-public-footer .kawaii-primary-button,
+.cloud-public-theme .kawaii-primary-button,
+.cloud-public-theme .kawaii-header-cta,
+.cloud-public-theme .nimbus-submit.btn-primary {
+  background: var(--kawaii-text) !important; color: var(--kawaii-bg) !important; box-shadow: none !important;
+}
+.cloud-public-theme .nimbus-submit::before, .cloud-public-theme .kawaii-primary-button::before { display: none !important; }
+.cloud-public-theme input[type='checkbox'] { accent-color: var(--kawaii-text); }
+.cloud-public-theme .kawaii-brand-mark { background: transparent; box-shadow: none; }
+.cloud-public-theme .kawaii-brand-mark img { filter: grayscale(1); }
+@media (prefers-reduced-motion: reduce) {
+  .cloud-public-theme *, .cloud-public-theme *::before, .cloud-public-theme *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

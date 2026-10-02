@@ -426,6 +426,43 @@ export default {
     },
 
     publicSite: {
+        cloud: {
+            "deployTitle": "从选择到连接，只需三步。",
+            "deployDescription": "选好配置，部署系统，让你的下一个项目开始运行。",
+            "createAccount": "创建账户",
+            "ctaTitle": "准备好在 {brand} 开始了吗？",
+            "ctaDescription": "从一台云主机出发，让想法有处落地。选择适合的套餐，在控制台开始部署。",
+            "footerInvitation": "你的下一台云主机，从这里开始。",
+            "footerDescription": "为应用、开发环境与个人项目，提供灵活的云端空间。",
+            "footerSupport": "服务支持",
+            "copyright": "保留所有权利。",
+            "steps": {
+                "select": {
+                    "title": "选择合适的套餐",
+                    "description": "按配置、地区与预算浏览套餐，登录后选择方案并下单。"
+                },
+                "deploy": {
+                    "title": "部署你的实例",
+                    "description": "在控制台选择系统镜像与实例配置，提交创建并查看部署进度。"
+                },
+                "connect": {
+                    "title": "连接，开始使用",
+                    "description": "查看实例的连接信息与端口映射，通过 SSH 登录，开始部署应用。"
+                }
+            },
+            heroSecondLine: "从一台云主机开始。",
+            heroDescription: "为你的应用、开发环境与个人项目，找到合适的云端空间。灵活选择 LXC 容器或 KVM 虚拟机，轻松管理每一台实例。",
+            unifiedConsole: "统一控制台",
+            welcomeBack: "欢迎回来",
+            capabilities: "云主机能力",
+            computeTitle: "按需选择计算资源",
+            computeDescription: "轻量容器与完整虚拟机",
+            networkTitle: "连接你的云端空间",
+            networkDescription: "网络配置在控制台统一管理",
+            manageTitle: "日常管理，一处完成",
+            manageDescription: "实例、流量与快照集中管理",
+            backHome: "返回首页",
+        },
         brandTagline: '基于 Incus 的低价 NAT VPS',
         nav: {
             home: '首页',
@@ -458,7 +495,7 @@ export default {
             marketPackageDescription: '查看 {name} 的 {type} 配置、月流量与套餐信息，确认后即可继续购买。',
         },
         portal: {
-            heroTitlePrimary: '智能云计算',
+            heroTitlePrimary: "让想法上线，",
             heroTitlePrefix: '连接',
             heroTitleAccent: '无限可能',
             stableSupply: '稳定供应',

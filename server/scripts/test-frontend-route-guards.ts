@@ -360,8 +360,9 @@ const marketRoute = sectionBetween(
 assert.ok(
   marketRoute.includes("name: 'market'") &&
     marketRoute.includes("component: () => import('@/views/MarketView.vue')") &&
-    marketRoute.includes("titleKey: 'publicSite.market.title'"),
-  'public /market route must render MarketView directly'
+    marketRoute.includes("titleKey: 'publicSite.market.title'") &&
+    !marketRoute.includes('requiresAuth: true') && !marketRoute.includes('requiresUser: true'),
+  'market route must allow guests to preview products before login'
 )
 assert.ok(
   !marketRoute.includes('redirect:'),
@@ -400,14 +401,19 @@ assert.ok(
 )
 assert.ok(
   portalViewSource.includes("import { dashboardPath, loginPath, marketPath } from '@/utils/app-paths'") &&
-    portalViewSource.includes("path: marketPath()") &&
+    portalViewSource.includes('<LoginView v-else embedded />') &&
+    !portalViewSource.includes('RegisterView') &&
+    portalViewSource.includes('api.packages.listPublic()') &&
+    portalViewSource.includes('cloud-products') &&
+    !portalViewSource.includes('cloud-sources') &&
+    portalViewSource.includes('path: marketPath()') &&
     !portalViewSource.includes('openAdminConsole') &&
     portalViewSource.includes("void router.push(dashboardPath())") &&
     portalViewSource.includes("void router.push(loginPath())") &&
     !portalViewSource.includes("path: '/market'") &&
     !portalViewSource.includes("void router.push('/dashboard')") &&
     !portalViewSource.includes("void router.push('/login')"),
-  'PortalView CTA must browse the public market and keep authenticated users on the customer console or guests on customer login'
+  'homepage must retain embedded login and restore public product previews; checkout still requires login'
 )
 assert.ok(
   oauthAuthorizeViewSource.includes("import { dashboardPath } from '@/utils/app-paths'") &&
@@ -627,7 +633,7 @@ assert.ok(
     appSource.includes('const showPublicSiteLayout = computed<boolean>') &&
     appSource.includes('!showPublicSiteLayout.value') &&
     appSource.includes('<PublicSiteLayout v-else-if="showPublicSiteLayout">'),
-  'App shell must wrap public portal, market, and help routes with the public site header/footer layout'
+  'App shell must render portal, market and help with the public layout'
 )
 const authenticatedAppShell = sectionBetween(
   appSource,

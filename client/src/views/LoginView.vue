@@ -12,17 +12,19 @@ import { useBrand } from '@/composables/useBrand'
 import { buildApiUrl } from '@/utils/api-url'
 import { forgotPasswordPath, registerPath } from '@/utils/app-paths'
 import { getDemoLoginAccount } from '@/utils/demo-login'
-import { useReveal } from '@/composables/useReveal'
+import PublicAuthLayout from '@/components/public/PublicAuthLayout.vue'
+import { useMediaQuery } from '@vueuse/core'
+
+defineProps<{ embedded?: boolean }>()
 
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
+const compactChallenge = useMediaQuery('(max-width: 420px)')
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
 const brand = useBrand()
 
-const revealRoot = ref<HTMLElement | null>(null)
-useReveal(revealRoot)
 
 const username = ref<string>('')
 const password = ref<string>('')
@@ -210,189 +212,177 @@ function getProviderInfo(provider: string): ProviderInfo {
 </script>
 
 <template>
-  <div ref="revealRoot" class="nimbus-auth kawaii-public-shell kawaii-auth-shell kawaii-user-auth min-h-screen flex items-center justify-center p-4 sm:p-6">
-    <div class="nimbus-aurora" aria-hidden="true"></div>
-    <div class="relative z-10 w-full max-w-md">
-
-      <!-- Logo lockup -->
-      <div class="nimbus-lockup" data-reveal>
-        <div class="nimbus-logo-tile">
-          <img :src="brand.brandLogoUrl" :alt="brand.brandName" />
-        </div>
-        <h1 class="nimbus-title">{{ brand.brandName }}</h1>
-        <p class="nimbus-subtitle">{{ $t('auth.loginTo') }}</p>
+  <PublicAuthLayout
+    class="cloud-login"
+    :embedded="embedded"
+    :title="t('publicSite.cloud.welcomeBack')"
+    :subtitle="`${t('auth.loginTo')} ${brand.brandName}`"
+  >
+    <form class="space-y-4" @submit.prevent="handleLogin">
+      <div class="nimbus-field">
+        <label for="login-username" class="nimbus-label">{{ $t('auth.usernameOrEmail') }}</label>
+        <input
+          id="login-username"
+          v-model="username"
+          type="text"
+          class="input"
+          :placeholder="$t('auth.usernameOrEmailPlaceholder')"
+          autocomplete="username"
+        />
       </div>
 
-      <!-- 登录表单 -->
-      <div class="card nimbus-card" data-reveal>
-        <form class="space-y-4" @submit.prevent="handleLogin">
-          <div class="nimbus-field">
-            <label class="nimbus-label">{{ $t('auth.usernameOrEmail') }}</label>
-            <input
-              v-model="username"
-              type="text"
-              class="input"
-              :placeholder="$t('auth.usernameOrEmailPlaceholder')"
-              autocomplete="username"
-            />
-          </div>
+      <div class="nimbus-field">
+        <div class="cloud-password-label"><label for="login-password" class="nimbus-label">{{ $t('auth.password') }}</label><RouterLink :to="forgotPasswordPath()" class="nimbus-textlink">{{ $t('auth.forgotPasswordLink') }}</RouterLink></div>
+        <input
+          id="login-password"
+          v-model="password"
+          type="password"
+          class="input"
+          :placeholder="$t('auth.passwordPlaceholder')"
+          autocomplete="current-password"
+        />
+      </div>
 
-          <div class="nimbus-field">
-            <label class="nimbus-label">{{ $t('auth.password') }}</label>
-            <input
-              v-model="password"
-              type="password"
-              class="input"
-              :placeholder="$t('auth.passwordPlaceholder')"
-              autocomplete="current-password"
-            />
-          </div>
-
-          <!-- 2FA 验证码输入（始终显示，可选） -->
-          <div class="nimbus-field">
-            <!-- TOTP 验证码 -->
-            <div v-if="!useRecoveryCode">
-              <label class="nimbus-label flex items-center gap-2">
-                <span>{{ $t('auth.twoFactorCode') }}</span>
-                <span class="nimbus-chip">{{ $t('auth.twoFactorOptional') }}</span>
-              </label>
-              <input
-                v-model="totpCode"
-                type="text"
-                maxlength="6"
-                class="input font-mono tracking-[0.3em]"
-                :placeholder="$t('auth.twoFactorCodePlaceholder')"
-                autocomplete="one-time-code"
-              />
-              <p class="nimbus-hint">
-                {{ $t('auth.twoFactorOptionalHint') }}
-              </p>
-            </div>
-            <!-- 恢复码 -->
-            <div v-else>
-              <label class="nimbus-label">{{ $t('auth.recoveryCode') }}</label>
-              <input
-                v-model="recoveryCode"
-                type="text"
-                class="input font-mono"
-                :placeholder="$t('auth.recoveryCodePlaceholder')"
-              />
-              <p class="nimbus-hint">
-                {{ $t('auth.recoveryCodeHint') }}
-              </p>
-            </div>
-            <!-- 切换按钮 -->
-            <button
-              type="button"
-              class="nimbus-textlink mt-2.5"
-              @click="useRecoveryCode = !useRecoveryCode; totpCode = ''; recoveryCode = ''"
-            >
-              {{ useRecoveryCode ? $t('auth.useTotpCode') : $t('auth.useRecoveryCode') }}
-            </button>
-          </div>
-
-          <!-- Turnstile 验证 -->
-          <div
-            v-if="isTurnstileChallengeAvailable"
-            ref="turnstileSectionRef"
-            tabindex="-1"
-            class="nimbus-turnstile"
-          >
-            <TurnstileWidget
-              ref="turnstileRef"
-              v-model="turnstileToken"
-              :site-key="turnstileSiteKey"
-              :theme="themeStore.isDark ? 'dark' : 'light'"
-              @expire="onTurnstileExpire"
-            />
-          </div>
-
-          <!-- 错误提示 -->
-          <div v-if="error" class="nimbus-alert" role="alert">
-            <svg class="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 9v3.75m0 3.75h.008M10.34 3.94l-8.52 14.06A1.875 1.875 0 003.424 20.9h17.152a1.875 1.875 0 001.604-2.9L13.66 3.94a1.875 1.875 0 00-3.32 0z" />
-            </svg>
-            <span>{{ error }}</span>
-          </div>
-
-          <button
-            type="submit"
-            :disabled="loading"
-            class="btn-primary w-full nimbus-submit"
-          >
-            {{ loading ? $t('auth.loggingIn') : $t('auth.continue') }}
-          </button>
-
-          <div v-if="demoAccount" class="nimbus-demo">
-            <div class="nimbus-demo-head">
-              <span class="nimbus-demo-title">{{ demoAccount.label }}</span>
-              <button
-                type="button"
-                :disabled="loading"
-                class="nimbus-demo-btn"
-                @click="loginWithDemoAccount"
-              >
-                一键登录
-              </button>
-            </div>
-            <div class="nimbus-demo-grid">
-              <span class="nimbus-demo-key">账号</span>
-              <span>{{ demoAccount.username }}</span>
-              <span class="nimbus-demo-key">邮箱</span>
-              <span>{{ demoAccount.email }}</span>
-              <span class="nimbus-demo-key">密码</span>
-              <span>{{ demoAccount.password }}</span>
-            </div>
-          </div>
-        </form>
-
-        <!-- OAuth Quick Login -->
-        <div v-if="oauthProviders.length > 0" class="mt-6">
-          <div class="nimbus-divider">
-            <span>{{ $t('auth.orUse') }}</span>
-          </div>
-
-          <div class="mt-4 grid gap-3" :class="oauthProviders.length > 1 ? 'grid-cols-2' : 'grid-cols-1'">
-            <button
-              v-for="provider in oauthProviders"
-              :key="provider"
-              :class="[
-                'flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                getProviderInfo(provider).bgClass,
-                getProviderInfo(provider).textClass
-              ]"
-              @click="loginWithOAuth(provider)"
-            >
-              <span v-html="getProviderInfo(provider).icon"></span>
-              {{ getProviderInfo(provider).name }}
-            </button>
-          </div>
-
-          <p class="mt-3 text-xs text-center text-themed-muted">
-            {{ $t('auth.oauthBindHint') }}
+      <!-- 2FA 验证码输入（始终显示，可选） -->
+      <div class="nimbus-field">
+        <!-- TOTP 验证码 -->
+        <div v-if="!useRecoveryCode">
+          <label for="login-totp" class="nimbus-label flex items-center gap-2">
+            <span>{{ $t('auth.twoFactorCode') }}</span>
+            <span class="nimbus-chip">{{ $t('auth.twoFactorOptional') }}</span>
+          </label>
+          <input
+            id="login-totp" v-model="totpCode"
+            inputmode="numeric"
+            type="text"
+            maxlength="6"
+            class="input font-mono tracking-[0.3em]"
+            :placeholder="$t('auth.twoFactorCodePlaceholder')"
+            autocomplete="one-time-code"
+          />
+          <p class="nimbus-hint">
+            {{ $t('auth.twoFactorOptionalHint') }}
           </p>
         </div>
+        <!-- 恢复码 -->
+        <div v-else>
+          <label for="login-recovery" class="nimbus-label">{{ $t('auth.recoveryCode') }}</label>
+          <input
+            id="login-recovery"
+            v-model="recoveryCode"
+            type="text"
+            class="input font-mono"
+            :placeholder="$t('auth.recoveryCodePlaceholder')"
+          />
+          <p class="nimbus-hint">
+            {{ $t('auth.recoveryCodeHint') }}
+          </p>
+        </div>
+        <!-- 切换按钮 -->
+        <button
+          type="button"
+          class="nimbus-textlink mt-2.5"
+          @click="useRecoveryCode = !useRecoveryCode; totpCode = ''; recoveryCode = ''"
+        >
+          {{ useRecoveryCode ? $t('auth.useTotpCode') : $t('auth.useRecoveryCode') }}
+        </button>
       </div>
 
-      <div class="mt-6 space-y-2 text-center text-sm">
-        <p v-if="registrationEnabled" class="text-themed-muted">
-          {{ $t('auth.noAccount') }}
-          <RouterLink :to="registerPath()" class="nimbus-textlink nimbus-textlink--accent">
-            {{ $t('auth.register') }}
-          </RouterLink>
-        </p>
-        <p v-else class="text-themed-muted">
-          {{ $t('auth.registrationClosedShort') }}
-        </p>
-        <p class="text-themed-muted">
-          <RouterLink :to="forgotPasswordPath()" class="nimbus-textlink">
-            {{ $t('auth.forgotPasswordLink') }}
-          </RouterLink>
-        </p>
+      <!-- Turnstile 验证 -->
+      <div
+        v-if="isTurnstileChallengeAvailable"
+        ref="turnstileSectionRef"
+        tabindex="-1"
+        class="nimbus-turnstile"
+      >
+        <TurnstileWidget
+          ref="turnstileRef"
+          v-model="turnstileToken"
+          :site-key="turnstileSiteKey"
+          :size="compactChallenge ? 'compact' : 'normal'"
+          :theme="themeStore.isDark ? 'dark' : 'light'"
+          @expire="onTurnstileExpire"
+        />
       </div>
 
-      <!-- 右下角操作按钮 -->
-      <div class="fixed bottom-4 right-4 z-10 flex items-center gap-2">
+      <!-- 错误提示 -->
+      <div v-if="error" class="nimbus-alert" role="alert">
+        <svg class="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 9v3.75m0 3.75h.008M10.34 3.94l-8.52 14.06A1.875 1.875 0 003.424 20.9h17.152a1.875 1.875 0 001.604-2.9L13.66 3.94a1.875 1.875 0 00-3.32 0z" />
+        </svg>
+        <span>{{ error }}</span>
+      </div>
+
+      <button
+        type="submit"
+        :disabled="loading"
+        class="btn-primary w-full nimbus-submit"
+      >
+        {{ loading ? $t('auth.loggingIn') : $t('auth.continue') }}
+      </button>
+
+      <div v-if="demoAccount" class="nimbus-demo">
+        <div class="nimbus-demo-head">
+          <span class="nimbus-demo-title">{{ demoAccount.label }}</span>
+          <button
+            type="button"
+            :disabled="loading"
+            class="nimbus-demo-btn"
+            @click="loginWithDemoAccount"
+          >
+            一键登录
+          </button>
+        </div>
+        <div class="nimbus-demo-grid">
+          <span class="nimbus-demo-key">账号</span>
+          <span>{{ demoAccount.username }}</span>
+          <span class="nimbus-demo-key">邮箱</span>
+          <span>{{ demoAccount.email }}</span>
+          <span class="nimbus-demo-key">密码</span>
+          <span>{{ demoAccount.password }}</span>
+        </div>
+      </div>
+    </form>
+
+    <!-- OAuth Quick Login -->
+    <div v-if="oauthProviders.length > 0" class="mt-6">
+      <div class="nimbus-divider">
+        <span>{{ $t('auth.orUse') }}</span>
+      </div>
+
+      <div class="mt-4 grid gap-3" :class="oauthProviders.length > 1 ? 'grid-cols-2' : 'grid-cols-1'">
+        <button
+          v-for="provider in oauthProviders"
+          :key="provider"
+          :class="[
+            'flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors',
+            getProviderInfo(provider).bgClass,
+            getProviderInfo(provider).textClass
+          ]"
+          @click="loginWithOAuth(provider)"
+        >
+          <span v-html="getProviderInfo(provider).icon"></span>
+          {{ getProviderInfo(provider).name }}
+        </button>
+      </div>
+
+      <p class="mt-3 text-xs text-center text-themed-muted">
+        {{ $t('auth.oauthBindHint') }}
+      </p>
+    </div>
+    <template #after>
+      <p v-if="registrationEnabled" class="text-themed-muted">
+        {{ $t('auth.noAccount') }}
+        <RouterLink :to="registerPath()" class="nimbus-textlink nimbus-textlink--accent">
+          {{ $t('auth.register') }}
+        </RouterLink>
+      </p>
+      <p v-else class="text-themed-muted">
+        {{ $t('auth.registrationClosedShort') }}
+      </p>
+    </template>
+    <template #footer>
+      <div class="flex items-center gap-2">
         <a
           v-if="contactEmailHref"
           :href="contactEmailHref"
@@ -409,117 +399,15 @@ function getProviderInfo(provider: string): ProviderInfo {
             />
           </svg>
         </a>
-
-        <button
-          class="kawaii-header-icon p-2 rounded-lg transition-colors"
-          :title="themeStore.mode === 'dark' ? $t('theme.dark') : themeStore.mode === 'light' ? $t('theme.light') : $t('theme.system')"
-          @click="themeStore.toggleTheme"
-        >
-          <!-- 深色图标 -->
-          <svg v-if="themeStore.mode === 'dark'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-          </svg>
-          <!-- 浅色图标 -->
-          <svg v-else-if="themeStore.mode === 'light'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-          </svg>
-          <!-- 系统图标 -->
-          <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
-        </button>
       </div>
-    </div>
-  </div>
+    </template>
+  </PublicAuthLayout>
 </template>
 
 <style scoped>
-/* ============ Nimbus 认证画布 ============ */
-.nimbus-auth {
-  position: relative;
-  overflow: hidden;
-}
-
-.nimbus-aurora {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.nimbus-aurora::before {
-  content: '';
-  position: absolute;
-  top: -22%;
-  left: 50%;
-  width: min(760px, 128vw);
-  height: min(760px, 128vw);
-  transform: translateX(-50%);
-  background: radial-gradient(circle, color-mix(in srgb, var(--kawaii-primary) 24%, transparent), transparent 62%);
-  opacity: 0.55;
-}
-
-.nimbus-aurora::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(color-mix(in srgb, var(--kawaii-text) 9%, transparent) 1px, transparent 1px);
-  background-size: 26px 26px;
-  -webkit-mask-image: radial-gradient(ellipse 78% 52% at 50% 0%, #000 0%, transparent 70%);
-  mask-image: radial-gradient(ellipse 78% 52% at 50% 0%, #000 0%, transparent 70%);
-  opacity: 0.5;
-}
-
-/* ============ Logo lockup ============ */
-.nimbus-lockup {
-  text-align: center;
-  margin-bottom: 1.75rem;
-}
-
-.nimbus-logo-tile {
-  width: 58px;
-  height: 58px;
-  margin: 0 auto 0.9rem;
-  display: grid;
-  place-items: center;
-  border-radius: 16px;
-  background: var(--kawaii-surface);
-  border: 1px solid var(--kawaii-line);
-  box-shadow: 0 1px 2px rgb(16 24 40 / 0.06), 0 10px 26px rgb(79 70 229 / 0.12);
-}
-
-.nimbus-logo-tile img {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-}
-
-.nimbus-title {
-  font-size: 1.4rem;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-  color: var(--kawaii-text);
-  line-height: 1.2;
-}
-
-.nimbus-subtitle {
-  margin-top: 0.35rem;
-  font-size: 0.875rem;
-  color: var(--kawaii-muted);
-}
-
-/* ============ Card ============ */
-.nimbus-card {
-  border-radius: 16px;
-  padding: 1.75rem;
-}
-
-@media (min-width: 640px) {
-  .nimbus-card {
-    padding: 2rem;
-  }
-}
+.cloud-password-label { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.cloud-password-label a { font-size: 12px; }
+.cloud-login button span :deep(svg) { filter: grayscale(1); }
 
 /* ============ Fields ============ */
 .nimbus-label {
@@ -570,7 +458,7 @@ function getProviderInfo(provider: string): ProviderInfo {
   border-radius: 12px;
   border: 1px solid var(--kawaii-line);
   background: var(--kawaii-surface-soft);
-  padding: 0.75rem;
+  padding: 0;
 }
 
 .nimbus-turnstile:focus-visible {
@@ -623,7 +511,7 @@ function getProviderInfo(provider: string): ProviderInfo {
   border-radius: 8px;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--kawaii-bg);
   background: var(--kawaii-primary);
   transition: background-color 0.15s ease, transform 0.1s ease;
 }
@@ -679,21 +567,4 @@ function getProviderInfo(provider: string): ProviderInfo {
   background: var(--kawaii-surface);
 }
 
-/* ============ Entrance motion ============ */
-@media (prefers-reduced-motion: no-preference) {
-  .nimbus-logo-tile {
-    animation: nimbus-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-}
-
-@keyframes nimbus-pop {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
 </style>

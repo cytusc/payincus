@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import '@/styles/public-cloud.css'
+import HomeSiteFooter from '@/components/public/HomeSiteFooter.vue'
 import PublicSiteFooter from '@/components/public/PublicSiteFooter.vue'
 import PublicSiteHeader from '@/components/public/PublicSiteHeader.vue'
 
@@ -13,9 +15,11 @@ const isAuthPage = computed(() => authRouteNames.has(String(route.name || '')))
 
 <template>
   <div
+    :class="{ 'cloud-public-theme': route.name === 'portal' }"
     class="kawaii-public-shell flex min-h-screen flex-col selection:bg-sky-200/50 dark:selection:bg-sky-400/25"
   >
     <div
+      v-if="route.name !== 'portal'"
       class="kawaii-public-glow pointer-events-none absolute inset-x-0 top-0 h-[34rem]"
     ></div>
 
@@ -31,6 +35,7 @@ const isAuthPage = computed(() => authRouteNames.has(String(route.name || '')))
       <slot v-else />
     </main>
 
-    <PublicSiteFooter v-if="!isAuthPage" />
+    <HomeSiteFooter v-if="route.name === 'portal'" />
+    <PublicSiteFooter v-else-if="!isAuthPage" />
   </div>
 </template>

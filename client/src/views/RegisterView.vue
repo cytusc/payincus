@@ -12,7 +12,11 @@ import TermsOfServiceModal from '@/components/TermsOfServiceModal.vue'
 import api from '@/api'
 import { useBrand } from '@/composables/useBrand'
 import { dashboardPath, loginPath } from '@/utils/app-paths'
-import { useReveal } from '@/composables/useReveal'
+import PublicAuthLayout from '@/components/public/PublicAuthLayout.vue'
+import { useMediaQuery } from '@vueuse/core'
+
+const compactChallenge = useMediaQuery('(max-width: 420px)')
+defineProps<{ embedded?: boolean }>()
 
 const isAdminEntry = import.meta.env.VITE_APP_ENTRY === 'admin'
 
@@ -22,9 +26,6 @@ const { t } = useI18n()
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
 const brand = useBrand()
-
-const revealRoot = ref<HTMLElement | null>(null)
-useReveal(revealRoot)
 
 interface RegisterForm {
   username: string
@@ -336,21 +337,15 @@ async function handleRegister(): Promise<void> {
 </script>
 
 <template>
-  <div ref="revealRoot" class="nimbus-auth kawaii-public-shell kawaii-auth-shell kawaii-user-auth min-h-screen flex items-center justify-center p-4 sm:p-6">
-    <div class="nimbus-aurora" aria-hidden="true"></div>
-    <div class="relative z-10 w-full max-w-lg">
-
-      <!-- Logo lockup -->
-      <div class="nimbus-lockup" data-reveal>
-        <div class="nimbus-logo-tile">
-          <img :src="brand.brandLogoUrl" :alt="brand.brandName" />
-        </div>
-        <h1 class="nimbus-title">{{ brand.brandName }}</h1>
-        <p class="nimbus-subtitle">{{ $t('auth.createAccount') }}</p>
-      </div>
-
+  <div class="cloud-register-page">
+    <PublicAuthLayout
+      class="cloud-register"
+      :embedded="embedded"
+      :title="t('publicSite.cloud.createAccount')"
+      :subtitle="`${t('auth.registerTo')} ${brand.brandName}`"
+    >
       <!-- 注册成功 -->
-      <div v-if="success" class="card nimbus-card nimbus-state" data-reveal>
+      <div v-if="success" class="nimbus-state">
         <div class="nimbus-state-icon nimbus-state-icon--ok">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -359,12 +354,12 @@ async function handleRegister(): Promise<void> {
         <p class="text-themed font-medium">{{ $t('auth.registerSuccess') }}</p>
       </div>
 
-      <div v-else-if="configLoading" class="card nimbus-card nimbus-state" data-reveal>
+      <div v-else-if="configLoading" class="nimbus-state">
         <div class="nimbus-spinner"></div>
         <p class="text-themed-muted">{{ $t('common.loading') }}...</p>
       </div>
 
-      <div v-else-if="!registrationEnabled" class="card nimbus-card nimbus-state" data-reveal>
+      <div v-else-if="!registrationEnabled" class="nimbus-state">
         <div class="nimbus-state-icon nimbus-state-icon--warn">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M12 9v3.75m0 3.75h.007v.008H12v-.008z" />
@@ -377,59 +372,61 @@ async function handleRegister(): Promise<void> {
         <p class="text-sm leading-6 text-themed-muted">
           {{ $t('auth.registrationClosedMessage') }}
         </p>
-        <button type="button" class="btn-primary w-full" @click="router.push(loginPath())">
+        <button type="button" class="cloud-button w-full" @click="router.push(loginPath())">
           {{ $t('auth.backToLogin') }}
         </button>
       </div>
 
       <!-- 注册表单 -->
-      <div v-else class="card nimbus-card" data-reveal>
+      <div v-else class="cloud-register-form">
         <form class="space-y-4" @submit.prevent="handleRegister">
           <div v-if="requireInviteCode" class="nimbus-field">
-            <label class="nimbus-label">
+            <label for="register-invite" class="nimbus-label">
               {{ $t('auth.inviteCode') }} <span class="nimbus-req">*</span>
             </label>
-            <input v-model="form.inviteCode" type="text" class="input font-mono" :placeholder="$t('auth.inviteCodePlaceholder')" />
+            <input id="register-invite" v-model="form.inviteCode" type="text" class="input font-mono" :placeholder="$t('auth.inviteCodePlaceholder')" />
           </div>
 
           <div class="nimbus-field">
-            <label class="nimbus-label">
+            <label for="register-username" class="nimbus-label">
               {{ $t('auth.username') }} <span class="nimbus-req">*</span>
             </label>
-            <input v-model="form.username" type="text" class="input" :placeholder="$t('auth.usernameHint')" />
+            <input id="register-username" v-model="form.username" autocomplete="username" type="text" class="input" :placeholder="$t('auth.usernameHint')" />
           </div>
 
           <div class="nimbus-field">
-            <label class="nimbus-label">
+            <label for="register-email" class="nimbus-label">
               {{ $t('auth.email') }} <span class="nimbus-req">*</span>
             </label>
             <!-- 邮箱白名单模式：左边输入用户名，右边选择域名 -->
             <div v-if="emailDomainWhitelistEnabled && allowedEmailDomains.length > 0" class="flex items-center gap-2">
               <input
-                v-model="emailUsername"
+                id="register-email" v-model="emailUsername"
                 type="text"
                 class="input min-w-0 flex-1"
                 :placeholder="$t('auth.emailUsernamePlaceholder')"
               />
               <div class="shrink-0 text-themed-muted">@</div>
-              <select v-model="selectedEmailDomain" class="input w-32 max-w-[45%] shrink-0 sm:w-auto sm:min-w-[140px]">
+              <select v-model="selectedEmailDomain" :aria-label="$t('auth.email')" class="input w-32 max-w-[45%] shrink-0 sm:w-auto sm:min-w-[140px]">
                 <option v-for="domain in allowedEmailDomains" :key="domain" :value="domain">
                   {{ domain }}
                 </option>
               </select>
             </div>
             <!-- 普通模式：完整邮箱输入 -->
-            <input v-else v-model="form.email" type="email" class="input" placeholder="your@email.com" />
+            <input v-else id="register-email" v-model="form.email" autocomplete="email" type="email" class="input" placeholder="your@email.com" />
           </div>
 
           <!-- Email Verification Code -->
           <div v-if="emailVerificationEnabled" class="nimbus-field">
-            <label class="nimbus-label">
+            <label for="register-email-code" class="nimbus-label">
               {{ $t('auth.emailCode') }} <span class="nimbus-req">*</span>
             </label>
             <div class="flex flex-col gap-2 sm:flex-row">
               <input
-                v-model="form.emailCode"
+                id="register-email-code" v-model="form.emailCode"
+                autocomplete="one-time-code"
+                inputmode="numeric"
                 type="text"
                 class="input min-w-0 flex-1 font-mono tracking-[0.3em]"
                 maxlength="6"
@@ -437,7 +434,7 @@ async function handleRegister(): Promise<void> {
               />
               <button
                 type="button"
-                class="btn-secondary w-full whitespace-nowrap px-4 sm:w-auto"
+                class="btn-secondary cloud-auth-secondary w-full whitespace-nowrap px-4 sm:w-auto"
                 :disabled="sendingCode || codeCountdown > 0 || !form.email"
                 :title="!form.email ? $t('auth.enterEmailFirst') : ''"
                 @click="handleSendCodeClick"
@@ -459,17 +456,17 @@ async function handleRegister(): Promise<void> {
           </div>
 
           <div class="nimbus-field">
-            <label class="nimbus-label">
+            <label for="register-password" class="nimbus-label">
               {{ $t('auth.password') }} <span class="nimbus-req">*</span>
             </label>
-            <input v-model="form.password" type="password" class="input" :placeholder="$t('auth.passwordHint')" />
+            <input id="register-password" v-model="form.password" type="password" autocomplete="new-password" class="input" :placeholder="$t('auth.passwordHint')" />
           </div>
 
           <div class="nimbus-field">
-            <label class="nimbus-label">
+            <label for="register-confirm" class="nimbus-label">
               {{ $t('auth.confirmPassword') }} <span class="nimbus-req">*</span>
             </label>
-            <input v-model="form.confirmPassword" type="password" class="input" :placeholder="$t('auth.confirmPasswordPlaceholder')" />
+            <input id="register-confirm" v-model="form.confirmPassword" type="password" autocomplete="new-password" class="input" :placeholder="$t('auth.confirmPasswordPlaceholder')" />
           </div>
 
           <!-- Turnstile 验证 -->
@@ -483,6 +480,7 @@ async function handleRegister(): Promise<void> {
               ref="turnstileRef"
               v-model="turnstileToken"
               :site-key="turnstileSiteKey"
+              :size="compactChallenge ? 'compact' : 'normal'"
               :theme="themeStore.isDark ? 'dark' : 'light'"
               @expire="onTurnstileExpire"
             />
@@ -524,175 +522,74 @@ async function handleRegister(): Promise<void> {
           </button>
         </form>
       </div>
+      <template #after>
+        <p class="text-themed-muted">
+          {{ $t('auth.hasAccount') }}
+          <RouterLink :to="loginPath()" class="nimbus-textlink nimbus-textlink--accent">
+            {{ $t('auth.login') }}
+          </RouterLink>
+        </p>
+      </template>
+    </PublicAuthLayout>
 
-      <!-- 服务条款弹窗 -->
-      <TermsOfServiceModal
-        :show="showTermsModal"
-        @close="showTermsModal = false"
-      />
+    <!-- 服务条款弹窗 -->
+    <TermsOfServiceModal
+      :show="showTermsModal"
+      @close="showTermsModal = false"
+    />
 
-      <!-- 邮箱确认弹窗 -->
-      <Teleport to="body">
-        <Transition name="modal">
-          <div v-if="showEmailConfirmModal" class="modal-overlay">
-            <div class="modal-backdrop" @click="showEmailConfirmModal = false" />
-            <div class="modal-content max-w-sm">
-              <div class="modal-header">
-                <h3 class="modal-title">{{ $t('auth.confirmEmail') }}</h3>
-                <button
-                  type="button"
-                  class="p-1 rounded transition-colors hover:bg-themed-hover"
-                  @click="showEmailConfirmModal = false"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <div class="modal-body text-center">
-                <p class="text-sm mb-4" :class="'text-themed-muted'">
-                  {{ $t('auth.confirmEmailMessage') }}
-                </p>
-                <p class="text-lg font-medium break-all">
-                  <span class="text-themed">{{ emailUsername || form.email.split('@')[0] }}</span>
-                  <span class="text-red-500 font-bold">@{{ selectedEmailDomain || form.email.split('@')[1] }}</span>
-                </p>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn-secondary"
-                  @click="showEmailConfirmModal = false"
-                >
-                  {{ $t('common.cancel') }}
-                </button>
-                <button
-                  type="button"
-                  class="btn-primary"
-                  @click="confirmSendCode"
-                >
-                  {{ $t('auth.confirmAndSend') }}
-                </button>
-              </div>
+    <!-- 邮箱确认弹窗 -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showEmailConfirmModal" class="modal-overlay cloud-public-theme cloud-email-confirm">
+          <div class="modal-backdrop" @click="showEmailConfirmModal = false" />
+          <div class="modal-content max-w-sm" role="dialog" aria-modal="true" aria-labelledby="register-confirm-email-title">
+            <div class="modal-header">
+              <h3 id="register-confirm-email-title" class="modal-title">{{ $t('auth.confirmEmail') }}</h3>
+              <button
+                type="button"
+                class="p-1 rounded transition-colors hover:bg-themed-hover"
+                :aria-label="$t('common.close')"
+                @click="showEmailConfirmModal = false"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div class="modal-body text-center">
+              <p class="text-sm mb-4" :class="'text-themed-muted'">
+                {{ $t('auth.confirmEmailMessage') }}
+              </p>
+              <p class="text-lg font-medium break-all">
+                <span class="text-themed">{{ emailUsername || form.email.split('@')[0] }}</span>
+                <span class="text-themed font-semibold">@{{ selectedEmailDomain || form.email.split('@')[1] }}</span>
+              </p>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="cloud-button cloud-button-secondary"
+                @click="showEmailConfirmModal = false"
+              >
+                {{ $t('common.cancel') }}
+              </button>
+              <button
+                type="button"
+                class="cloud-button"
+                @click="confirmSendCode"
+              >
+                {{ $t('auth.confirmAndSend') }}
+              </button>
             </div>
           </div>
-        </Transition>
-      </Teleport>
-
-      <p class="mt-6 text-center text-sm text-themed-muted">
-        {{ $t('auth.hasAccount') }}
-        <RouterLink :to="loginPath()" class="nimbus-textlink nimbus-textlink--accent">
-          {{ $t('auth.login') }}
-        </RouterLink>
-      </p>
-
-      <!-- 主题切换 -->
-      <button
-        class="kawaii-header-icon fixed bottom-4 right-4 p-2 rounded-lg transition-colors"
-        @click="themeStore.toggleTheme"
-      >
-        <svg v-if="themeStore.mode === 'dark'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-        </svg>
-        <svg v-else-if="themeStore.mode === 'light'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-        <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
-      </button>
-    </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <style scoped>
-/* ============ Nimbus 认证画布 ============ */
-.nimbus-auth {
-  position: relative;
-  overflow: hidden;
-}
-
-.nimbus-aurora {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.nimbus-aurora::before {
-  content: '';
-  position: absolute;
-  top: -22%;
-  left: 50%;
-  width: min(760px, 128vw);
-  height: min(760px, 128vw);
-  transform: translateX(-50%);
-  background: radial-gradient(circle, color-mix(in srgb, var(--kawaii-primary) 24%, transparent), transparent 62%);
-  opacity: 0.55;
-}
-
-.nimbus-aurora::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(color-mix(in srgb, var(--kawaii-text) 9%, transparent) 1px, transparent 1px);
-  background-size: 26px 26px;
-  -webkit-mask-image: radial-gradient(ellipse 78% 52% at 50% 0%, #000 0%, transparent 70%);
-  mask-image: radial-gradient(ellipse 78% 52% at 50% 0%, #000 0%, transparent 70%);
-  opacity: 0.5;
-}
-
-/* ============ Logo lockup ============ */
-.nimbus-lockup {
-  text-align: center;
-  margin-bottom: 1.75rem;
-}
-
-.nimbus-logo-tile {
-  width: 58px;
-  height: 58px;
-  margin: 0 auto 0.9rem;
-  display: grid;
-  place-items: center;
-  border-radius: 16px;
-  background: var(--kawaii-surface);
-  border: 1px solid var(--kawaii-line);
-  box-shadow: 0 1px 2px rgb(16 24 40 / 0.06), 0 10px 26px rgb(79 70 229 / 0.12);
-}
-
-.nimbus-logo-tile img {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-}
-
-.nimbus-title {
-  font-size: 1.4rem;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-  color: var(--kawaii-text);
-  line-height: 1.2;
-}
-
-.nimbus-subtitle {
-  margin-top: 0.35rem;
-  font-size: 0.875rem;
-  color: var(--kawaii-muted);
-}
-
-/* ============ Card ============ */
-.nimbus-card {
-  border-radius: 16px;
-  padding: 1.75rem;
-}
-
-@media (min-width: 640px) {
-  .nimbus-card {
-    padding: 2rem;
-  }
-}
-
 /* ============ State cards ============ */
 .nimbus-state {
   text-align: center;
@@ -751,7 +648,7 @@ async function handleRegister(): Promise<void> {
 }
 
 .nimbus-req {
-  color: var(--error);
+  color: var(--kawaii-muted);
 }
 
 .nimbus-hint {
@@ -804,7 +701,7 @@ async function handleRegister(): Promise<void> {
   border-radius: 12px;
   border: 1px solid var(--kawaii-line);
   background: var(--kawaii-surface-soft);
-  padding: 0.75rem;
+  padding: 0;
 }
 
 .nimbus-turnstile:focus-visible {
@@ -830,21 +727,9 @@ async function handleRegister(): Promise<void> {
   margin-top: 0.25rem;
 }
 
-/* ============ Entrance motion ============ */
-@media (prefers-reduced-motion: no-preference) {
-  .nimbus-logo-tile {
-    animation: nimbus-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-}
-
-@keyframes nimbus-pop {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
+.cloud-email-confirm { background: transparent; }
+.cloud-email-confirm .modal-content { background: var(--kawaii-surface); border: 1px solid var(--kawaii-line); color: var(--kawaii-text); border-radius: 18px; }
+.cloud-email-confirm :is(.modal-header, .modal-footer) { border-color: var(--kawaii-line); }
+.cloud-email-confirm .modal-title { color: var(--kawaii-text); }
+.cloud-email-confirm .modal-footer .cloud-button { flex: 1; }
 </style>

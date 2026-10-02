@@ -379,6 +379,43 @@ const zhTW = {
     },
 
     publicSite: {
+        cloud: {
+            "deployTitle": "從選擇到連線，只需三步。",
+            "deployDescription": "選好配置，部署系統，讓你的下一個專案開始運行。",
+            "createAccount": "建立帳戶",
+            "ctaTitle": "準備好在 {brand} 開始了嗎？",
+            "ctaDescription": "從一台雲端主機出發，讓想法有處落地。選擇適合的套餐，在控制台開始部署。",
+            "footerInvitation": "你的下一台雲端主機，從這裡開始。",
+            "footerDescription": "為應用程式、開發環境與個人專案，提供靈活的雲端空間。",
+            "footerSupport": "服務支援",
+            "copyright": "保留所有權利。",
+            "steps": {
+                "select": {
+                    "title": "選擇合適的套餐",
+                    "description": "依配置、地區與預算瀏覽套餐，登入後選擇方案並下單。"
+                },
+                "deploy": {
+                    "title": "部署你的實例",
+                    "description": "在控制台選擇系統映像與實例配置，提交建立並查看部署進度。"
+                },
+                "connect": {
+                    "title": "連線，開始使用",
+                    "description": "查看實例的連線資訊與連接埠對映，透過 SSH 登入，開始部署應用程式。"
+                }
+            },
+            heroSecondLine: "從一台雲端主機開始。",
+            heroDescription: "為你的應用、開發環境與個人專案，找到合適的雲端空間。靈活選擇 LXC 容器或 KVM 虛擬機，輕鬆管理每一台實例。",
+            unifiedConsole: "統一控制台",
+            welcomeBack: "歡迎回來",
+            capabilities: "雲端主機功能",
+            computeTitle: "按需選擇運算資源",
+            computeDescription: "輕量容器與完整虛擬機",
+            networkTitle: "連接你的雲端空間",
+            networkDescription: "網路配置在控制台統一管理",
+            manageTitle: "日常管理，一處完成",
+            manageDescription: "實例、流量與快照集中管理",
+            backHome: "返回首頁",
+        },
         brandTagline: 'Incus 驅動的 NAT VPS 平台',
         nav: {
             home: '首頁',
@@ -411,7 +448,7 @@ const zhTW = {
             marketPackageDescription: '查看 {name} 的 {type} 配置、月流量與商品資訊，並在商品瀏覽頁延續開通流程。',
         },
         portal: {
-            heroTitlePrimary: '智慧雲端運算', heroTitlePrefix: '連接', heroTitleAccent: '無限可能', stableSupply: '穩定供應', moreChoices: '更多選擇',
+            heroTitlePrimary: "讓想法上線，",
             badge: 'Incus Driven NAT Platform',
             title: '基於 Incus 的 NAT VPS 入口與控制台',
             description: '精選全球多節點 LXC / KVM 商品，覆蓋直營與託管供給，配置檔位豐富，持續提供高性價比 NAT VPS 選擇。',

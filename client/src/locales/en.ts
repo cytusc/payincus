@@ -375,6 +375,43 @@ export default {
     },
 
     publicSite: {
+        cloud: {
+            "deployTitle": "From choosing to connecting, in three steps.",
+            "deployDescription": "Choose your resources, deploy a system, and get your next project running.",
+            "createAccount": "Create account",
+            "ctaTitle": "Ready to build on {brand}?",
+            "ctaDescription": "Give your next idea a place to run. Find a plan that fits and start deploying from your console.",
+            "footerInvitation": "Your next cloud instance starts here.",
+            "footerDescription": "Flexible cloud resources for applications, development environments, and personal projects.",
+            "footerSupport": "Support",
+            "copyright": "All rights reserved.",
+            "steps": {
+                "select": {
+                    "title": "Choose a plan",
+                    "description": "Browse plans by resources, region, and budget. Sign in to choose your plan and place an order."
+                },
+                "deploy": {
+                    "title": "Deploy your instance",
+                    "description": "Choose a system image and instance configuration in your console, then create it and follow deployment progress."
+                },
+                "connect": {
+                    "title": "Connect and start building",
+                    "description": "Find your connection details and port mappings, sign in over SSH, and start deploying your applications."
+                }
+            },
+            heroSecondLine: "Your next beginning.",
+            heroDescription: "A home for your apps, development environments and personal projects. Choose an LXC container or KVM virtual machine, and manage every instance in one place.",
+            unifiedConsole: "One console",
+            welcomeBack: "Welcome back",
+            capabilities: "Cloud capabilities",
+            computeTitle: "Compute that fits",
+            computeDescription: "Lightweight containers and full virtual machines",
+            networkTitle: "Connect your cloud",
+            networkDescription: "Manage network settings from your console",
+            manageTitle: "One place to manage it",
+            manageDescription: "Instances, traffic and snapshots together",
+            backHome: "Back to home",
+        },
         brandTagline: 'Incus-powered NAT VPS platform',
         nav: {
             home: 'Home',
@@ -407,7 +444,7 @@ export default {
             marketPackageDescription: 'Review the {type} profile, traffic, and product details for {name} on the public catalog.',
         },
         portal: {
-            heroTitlePrimary: 'Smart cloud computing', heroTitlePrefix: 'Connect ', heroTitleAccent: 'infinite possibilities', stableSupply: 'Stable supply', moreChoices: 'More choices',
+            heroTitlePrimary: "An idea. A server.",
             badge: 'Incus Driven NAT Platform',
             title: 'An Incus-powered NAT VPS portal and control plane',
             description: 'Curated global LXC and KVM plans across official and hosted supply, with broader tiers and strong value NAT VPS choices.',

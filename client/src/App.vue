@@ -206,6 +206,6 @@ onUnmounted(() => {
       </Transition>
     </template>
   </RouterView>
-  <PopupAnnouncementModal />
+  <PopupAnnouncementModal v-if="showLayout" />
   <ToastContainer />
 </template>
