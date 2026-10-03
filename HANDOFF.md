@@ -4,6 +4,24 @@ Last updated: 2026-07-13 11:45 CST
 
 This file is a handoff note for a new Codex conversation. Do not include server passwords or other secrets in this file.
 
+
+## v1.5.10 — HTTP integration server (2026-10-03)
+
+This is evidence for the owner-authorized `/root/incus` integration deployment on `147.135.128.84`, not a replacement for the historical production evidence below.
+
+- Release commit/tag: `c802c198d82b189d3300ae1dce4565b9fb6504ee` / `v1.5.10`; pushed to `origin/main` and `origin/v1.5.10`.
+- Build & Release: https://github.com/cytusc/payincus/actions/runs/37082324818 — success for amd64, arm64 and publication. Explicit dispatch against the tag was used because the push did not start workflows. No CI or Docs Pages run was produced for the push; local checks are separate evidence.
+- Release: https://github.com/cytusc/payincus/releases/tag/v1.5.10 — both tarballs, both SHA256 files, versioned and generic OTA manifests.
+- amd64 SHA256: `9f56df619f9b9e02cbc8696488bfbf24c9f51b8a5323507fe0d174871d8dfc76`; arm64 SHA256: `03a01136e5f7c494417393a707dfd6c42e08f69494495d583a07666ef5e280df`.
+- Before update, the deployed version-check implementation returned current `v1.5.9`, latest `v1.5.10`, `updateAvailable=true`, `manifestAvailable=true`, and `canApplyUpdate=true`.
+- The owner confirmed this is an HTTP-only environment without bound domains. Standard OTA production readiness requires HTTPS and the Agent manifest endpoint currently returns 404, so the standard OTA task was not run and its guards were not bypassed or changed.
+- Used a staged manual release-artifact deployment: verified manifest/size/SHA256/member paths; retained checkout and runtime configuration; confirmed unchanged lockfile, Prisma schema and migrations; installed the published client/server build outputs. Prisma reported no pending migrations. The backend was stopped before switching directories and restarted as one process.
+- Deployment time: `2026-10-03T00:45:52.535Z`. Application path remains `/root/incus`; previous complete directory: `/root/incus.bak.v1.5.9-before-v1.5.10`; database backup and operational evidence: `/root/incus-release-v1.5.10/` (root-only). No credentials are recorded here.
+- Post-update: current/latest `v1.5.10`, commit `c802c198d82b`, `updateAvailable=false`, manifest available; backend active and single-instance; both HTTP frontends and local API healthy. Database readiness, split-host assets/API/WebSocket checks and log/header exposure checks passed.
+- Browser smoke via an SSH tunnel to the real server: user home/login/register rendered at 1440px and 375px with HTTP 200, no horizontal overflow and no uncaught page errors; admin login rendered its password field without page errors. No real registration or credential submission was performed. Direct external browsing encountered proxy/network errors; the tunnel was used to isolate that transport issue.
+- Existing environment caveats: no active payment provider, SMTP disabled, no Lsky setup, no online host, no active shared package. HTTPS domains and Agent release setup are still needed before standard production OTA can pass.
+- Local release checks: client/server type-check, full `pnpm test` (160 guard/test scripts, using a placeholder local DATABASE_URL), dual frontend and server build, dist boundary guard, Go tests, installer guards, docs build/deployment guards, lint (0 errors; 603 existing warnings), and staged diff checks passed.
+
 ## Next Conversation Quick Start
 
 Give the next Codex session this file first. The active working directory is:

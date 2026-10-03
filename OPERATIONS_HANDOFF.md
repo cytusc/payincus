@@ -1,5 +1,8 @@
 # PayIncus / Incudal Operations Handoff
 
+> 2026-10-03 integration deployment: `/root/incus` on the owner-provided server now runs `v1.5.10` (`c802c198d82b`). This is an HTTP-only integration environment; see the v1.5.10 section in `HANDOFF.md` for release, backup and verification evidence. Standard production OTA still requires HTTPS and an available Agent manifest. Historical production facts below refer to the earlier environment.
+
+
 Last updated: 2026-07-10 05:02 CST
 
 This is the operational handoff for engineers or agents taking over PayIncus / Incudal release work. Do not put server passwords, API tokens, cookies, private keys, or customer secrets in this file.
