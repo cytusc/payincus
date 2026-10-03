@@ -2,6 +2,8 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import obfuscator from 'rollup-plugin-obfuscator'
 import { fileURLToPath, URL } from 'node:url'
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 
 function findMatchingBrace(source: string, openIndex: number): number {
   let depth = 0
@@ -383,8 +385,42 @@ export default defineConfig(({ mode }) => {
         transformIndexHtml: {
           order: 'pre',
           handler(html) {
-            return html.replace('/src/main.ts', entryScript)
+            const output = html.replace('/src/main.ts', entryScript)
+            if (appEntry === 'admin') {
+              // 管理后台不应被搜索引擎收录
+              return output
+                .replace('<meta name="robots" content="index,follow">', '<meta name="robots" content="noindex,nofollow">')
+                .replace(/\s*<link rel="canonical"[^>]*>/, '')
+                .replace(/<title>[^<]*<\/title>/, '<title>管理后台</title>')
+                // 用户端的 noscript 兜底指向公开路由，管理后台不需要
+                .replace(/<noscript>[\s\S]*?<\/noscript>/, '')
+            }
+            return output
           }
+        },
+        closeBundle() {
+          const outputDir = resolve(process.cwd(), `dist/${appEntry}`)
+          if (!existsSync(outputDir)) return
+
+          if (appEntry === 'admin') {
+            // public/ 会被原样拷贝到两端，管理后台需要独立的 robots.txt：
+            // 既整体禁止收录，也避免把用户端私有路由写进管理端产物
+            writeFileSync(resolve(outputDir, 'robots.txt'), 'User-agent: *\nDisallow: /\n', 'utf8')
+            // 管理后台不对外暴露公开站点的 sitemap
+            const adminSitemap = resolve(outputDir, 'sitemap.xml')
+            if (existsSync(adminSitemap)) rmSync(adminSitemap, { force: true })
+            return
+          }
+
+          // 用户端：用构建日期补齐 lastmod。每次发版即内容变更，符合 lastmod 语义。
+          const sitemapPath = resolve(outputDir, 'sitemap.xml')
+          if (!existsSync(sitemapPath)) return
+          const lastmod = new Date().toISOString().slice(0, 10)
+          const sitemap = readFileSync(sitemapPath, 'utf8').replace(
+            /(<loc>[^<]+<\/loc>)(?!\s*<lastmod>)/g,
+            `$1\n    <lastmod>${lastmod}</lastmod>`
+          )
+          writeFileSync(sitemapPath, sitemap, 'utf8')
         }
       },
       appEntry === 'admin' && {

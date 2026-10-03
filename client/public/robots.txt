@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /instances
+Disallow: /wallet
+Disallow: /orders
+Disallow: /tickets
+Disallow: /profile
+Disallow: /inbox
+Disallow: /terminal
+Disallow: /logs
+Disallow: /transfers
+Disallow: /resources
+Disallow: /friends
+Disallow: /gift-cards
+Disallow: /invites
+Disallow: /mail
+Disallow: /entertainment
+Disallow: /extensions
+Disallow: /hosting-wallet
+Disallow: /oauth
+Disallow: /admin
+
+Sitemap: https://hoyovm.com/sitemap.xml

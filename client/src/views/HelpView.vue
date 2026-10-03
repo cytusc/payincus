@@ -5,10 +5,13 @@ import { useI18n } from 'vue-i18n'
 import api from '@/api'
 import { parseMarkdown } from '@/utils/markdown'
 import { helpPath } from '@/utils/app-paths'
+import { usePageSeo } from '@/composables/usePageSeo'
+import { useBrand } from '@/composables/useBrand'
 
 const route = useRoute()
 const router = useRouter()
 const { locale, t } = useI18n()
+const brand = useBrand()
 
 // 列表视图
 interface HelpArticle {
@@ -45,6 +48,73 @@ interface CategoryWithCount {
 }
 const categories = ref<CategoryWithCount[]>([])
 const selectedCategory = ref<string>(typeof route.query.category === 'string' ? route.query.category : '')
+
+function toIsoDate(value: string | undefined | null): string | undefined {
+  if (!value) return undefined
+  const parsed = new Date(value)
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString()
+}
+
+function buildHelpJsonLd(): Record<string, unknown> {
+  const origin = window.location.origin
+  const article = currentArticle.value
+  const crumbs: Record<string, unknown>[] = [
+    { '@type': 'ListItem', position: 1, name: t('publicSite.nav.overview'), item: `${origin}/` },
+    { '@type': 'ListItem', position: 2, name: t('publicSite.nav.help'), item: `${origin}/help` }
+  ]
+
+  if (article) {
+    crumbs.push({
+      '@type': 'ListItem',
+      position: 3,
+      name: article.title,
+      item: `${origin}/help/${article.slug}`
+    })
+  }
+
+  const graph: Record<string, unknown>[] = [{ '@type': 'BreadcrumbList', itemListElement: crumbs }]
+
+  if (article) {
+    const published = toIsoDate(article.created_at)
+    const modified = toIsoDate(article.updated_at) || published
+    graph.push({
+      '@type': 'Article',
+      headline: article.title,
+      description: t('publicSite.seo.helpArticleDescription', { title: article.title, brand: brand.brandName }),
+      mainEntityOfPage: `${origin}/help/${article.slug}`,
+      inLanguage: locale.value,
+      author: { '@type': 'Organization', name: brand.brandName },
+      publisher: { '@type': 'Organization', name: brand.brandName },
+      ...(published ? { datePublished: published } : {}),
+      ...(modified ? { dateModified: modified } : {})
+    })
+  }
+
+  return { '@context': 'https://schema.org', '@graph': graph }
+}
+
+usePageSeo(() => {
+  const article = currentArticle.value
+  const canonical = `${window.location.origin}${route.path}`
+
+  if (article) {
+    return {
+      title: t('publicSite.seo.helpArticleTitle', { title: article.title, brand: brand.brandName }),
+      description: t('publicSite.seo.helpArticleDescription', { title: article.title, brand: brand.brandName }),
+      canonical,
+      keywords: t('publicSite.seo.keywords', { brand: brand.brandName }),
+      jsonLd: buildHelpJsonLd()
+    }
+  }
+
+  return {
+    title: t('publicSite.seo.helpTitle', { brand: brand.brandName }),
+    description: t('publicSite.seo.helpDescription', { brand: brand.brandName }),
+    canonical,
+    keywords: t('publicSite.seo.keywords', { brand: brand.brandName }),
+    jsonLd: buildHelpJsonLd()
+  }
+})
 
 // 分类配置（从服务器加载）
 interface Category {

@@ -66,10 +66,10 @@ const consoleActionLabel = computed(() => (
 ))
 
 usePageSeo(() => ({
-  title: `${brand.brandName} - ${brand.brandSubtitle}`,
-  description: brand.brandSubtitle,
+  title: t('publicSite.seo.homeTitle', { brand: brand.brandName }),
+  description: t('publicSite.seo.homeDescription', { brand: brand.brandName }),
   canonical: `${window.location.origin}/`,
-  keywords: t('publicSite.seo.keywords').replace(/Incudal/g, brand.brandName)
+  keywords: t('publicSite.seo.keywords', { brand: brand.brandName })
 }))
 
 function goToConsole(): void {
@@ -89,7 +89,7 @@ function goToConsole(): void {
       <div class="cloud-container cloud-hero-grid">
         <div class="cloud-hero-copy">
           <div class="cloud-wordmark"><span></span> {{ brand.brandName }} Cloud</div>
-          <h1>{{ t('publicSite.portal.heroTitlePrimary') }}<br />{{ t('publicSite.cloud.heroSecondLine') }}</h1>
+          <h1>{{ t('publicSite.portal.heroTitlePrimary', { brand: brand.brandName }) }}<br />{{ t('publicSite.cloud.heroSecondLine') }}</h1>
           <p class="cloud-intro">{{ t('publicSite.cloud.heroDescription') }}</p>
           <div class="cloud-hero-actions">
             <button type="button" class="cloud-button" @click="browseCatalog()">{{ t('publicSite.actions.viewCatalog') }} <ArrowUpRight :size="17" aria-hidden="true" /></button>

@@ -177,6 +177,37 @@ const summaryCards = computed(() => [
   { label: t('publicSite.market.summary.source'), value: packageSource.value === 'official' ? t('publicSite.market.official') : t('publicSite.market.market') }
 ])
 
+function buildMarketJsonLd(): Record<string, unknown> {
+  const origin = window.location.origin
+  const graph: Record<string, unknown>[] = [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: t('publicSite.nav.overview'), item: `${origin}/` },
+        { '@type': 'ListItem', position: 2, name: t('publicSite.market.title'), item: `${origin}/market` }
+      ]
+    }
+  ]
+
+  // 用真实在售套餐生成 ItemList，帮助搜索引擎理解列表页内容
+  const listed = packages.value.slice(0, 30)
+  if (listed.length > 0) {
+    graph.push({
+      '@type': 'ItemList',
+      name: t('publicSite.seo.marketTitle', { brand: brand.brandName }),
+      numberOfItems: listed.length,
+      itemListElement: listed.map((pkg, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: pkg.name,
+        url: `${origin}/market?source=${pkg.sourceType}&package=${pkg.id}`
+      }))
+    })
+  }
+
+  return { '@context': 'https://schema.org', '@graph': graph }
+}
+
 usePageSeo(() => {
   const selected = selectedPackage.value
   const plan = selectedPlan.value
@@ -189,22 +220,24 @@ usePageSeo(() => {
 
   if (selected) {
     return {
-      title: t('publicSite.seo.marketPackageTitle', { name: selected.name }).replace(/Incudal/g, brand.brandName),
+      title: t('publicSite.seo.marketPackageTitle', { name: selected.name }),
       description: t('publicSite.seo.marketPackageDescription', {
         name: selected.name,
         type: selected.instance_type === 'vm' ? 'KVM' : 'LXC',
         traffic: formatTraffic(selected.monthly_traffic_limit)
       }),
       canonical,
-      keywords: t('publicSite.seo.keywords').replace(/Incudal/g, brand.brandName)
+      keywords: t('publicSite.seo.keywords', { brand: brand.brandName }),
+      jsonLd: buildMarketJsonLd()
     }
   }
 
   return {
-    title: t('publicSite.seo.marketTitle').replace(/Incudal/g, brand.brandName),
-    description: t('publicSite.seo.marketDescription'),
+    title: t('publicSite.seo.marketTitle', { brand: brand.brandName }),
+    description: t('publicSite.seo.marketDescription', { brand: brand.brandName }),
     canonical,
-    keywords: t('publicSite.seo.keywords').replace(/Incudal/g, brand.brandName)
+    keywords: t('publicSite.seo.keywords', { brand: brand.brandName }),
+    jsonLd: buildMarketJsonLd()
   }
 })
 

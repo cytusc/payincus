@@ -9,9 +9,13 @@ interface SeoOptions {
   robots?: string
   ogType?: string
   image?: string
+  /** 页面级结构化数据（schema.org）。传 null / 省略则不注入。 */
+  jsonLd?: Record<string, unknown> | null
 }
 
-const defaultTitle = typeof document !== 'undefined' ? document.title : 'Incudal'
+const PAGE_JSON_LD_ID = 'seo-page-json-ld'
+
+const defaultTitle = typeof document !== 'undefined' ? document.title : 'HoyoVm'
 const defaultDescription = typeof document !== 'undefined'
   ? (document.querySelector('meta[name="description"]') as HTMLMetaElement | null)?.content || ''
   : ''
@@ -65,10 +69,29 @@ function upsertCanonical(href: string): void {
   element.href = href
 }
 
+function upsertJsonLd(data: SeoOptions['jsonLd']): void {
+  const existing = document.getElementById(PAGE_JSON_LD_ID)
+
+  if (!data) {
+    existing?.remove()
+    return
+  }
+
+  let script = existing as HTMLScriptElement | null
+  if (!script) {
+    script = document.createElement('script')
+    script.id = PAGE_JSON_LD_ID
+    script.type = 'application/ld+json'
+    document.head.appendChild(script)
+  }
+
+  script.textContent = JSON.stringify(data)
+}
+
 function applySeo(options: SeoOptions): void {
   const configStore = useConfigStore()
-  const brandName = configStore.brandName?.trim() || 'Incudal'
-  const image = toAbsoluteUrl(options.image || configStore.brandLogoUrl?.trim() || '/incudal_logo.webp')
+  const brandName = configStore.brandName?.trim() || 'HoyoVm'
+  const image = toAbsoluteUrl(options.image || configStore.brandLogoUrl?.trim() || '/hoyovm_logo.webp')
   const canonical = options.canonical || window.location.href
   const robots = options.robots || defaultRobots
 
@@ -90,6 +113,7 @@ function applySeo(options: SeoOptions): void {
   upsertMetaByName('twitter:image', image)
 
   upsertCanonical(canonical)
+  upsertJsonLd(options.jsonLd ?? null)
 }
 
 function restoreDefaults(): void {
@@ -98,10 +122,10 @@ function restoreDefaults(): void {
   }
 
   const configStore = useConfigStore()
-  const brandName = configStore.brandName?.trim() || 'Incudal'
-  const brandSubtitle = configStore.brandSubtitle?.trim() || '基于 Incus 的低价 NAT VPS'
-  const brandLogoUrl = toAbsoluteUrl(configStore.brandLogoUrl?.trim() || '/incudal_logo.webp')
-  const title = defaultTitle.replace(/Incudal/g, brandName)
+  const brandName = configStore.brandName?.trim() || 'HoyoVm'
+  const brandSubtitle = configStore.brandSubtitle?.trim() || '全球多节点 NAT VPS 平台'
+  const brandLogoUrl = toAbsoluteUrl(configStore.brandLogoUrl?.trim() || '/hoyovm_logo.webp')
+  const title = defaultTitle.replace(/HoyoVm/g, brandName)
   const description = defaultDescription || brandSubtitle
 
   document.title = title
@@ -119,6 +143,7 @@ function restoreDefaults(): void {
   upsertMetaByName('twitter:description', description)
   upsertMetaByName('twitter:image', brandLogoUrl)
   upsertCanonical(defaultCanonical || window.location.href)
+  upsertJsonLd(null)
 }
 
 export function usePageSeo(options: MaybeRefOrGetter<SeoOptions>): void {
