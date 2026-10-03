@@ -861,7 +861,7 @@ function goBack(): void {
           <div class="md:col-span-2">
             <label class="block text-sm font-medium text-themed-secondary mb-1.5">{{ t('admin.packages.descLabel') }}</label>
             <input v-model="form.description" type="text" class="input" />
-            <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">{{ t('common.noIncudalHint') }}</p>
+            <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">{{ t('common.noBrandHint') }}</p>
           </div>
           <div v-if="!isEditMode" class="md:col-span-2">
             <label class="block text-sm font-medium text-themed-secondary mb-2">{{ t('packageForm.fields.packageCreationMode') }}</label>

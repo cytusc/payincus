@@ -23,9 +23,9 @@ type PopupPromoPackage = {
 
 export const useConfigStore = defineStore('config', () => {
     const avatarApiBase = ref('https://api.dicebear.com/9.x')
-    const brandName = ref('Incudal')
-    const brandSubtitle = ref('基于 Incus 的低价 NAT VPS')
-    const brandLogoUrl = ref('/incudal_logo.webp')
+    const brandName = ref('HoyoVm')
+    const brandSubtitle = ref('全球多节点 NAT VPS 平台')
+    const brandLogoUrl = ref('/hoyovm_logo.webp')
     const registrationEnabled = ref(true)
     const requireInviteCode = ref(true)
     const ticketEnabled = ref(true)
@@ -34,8 +34,8 @@ export const useConfigStore = defineStore('config', () => {
     const turnstileEnabled = ref(false)
     const turnstileSiteKey = ref<string | null>(null)
     const transferFee = ref(0)
-    const footerContactEmail = ref<string | null>('incudal@sent.com')
-    const footerTelegramLink = ref<string | null>('https://t.me/incudal_com')
+    const footerContactEmail = ref<string | null>('support@hoyovm.com')
+    const footerTelegramLink = ref<string | null>('https://t.me/hoyovm')
     const hostingMarketEntryEnabled = ref(true)
     const hostingNotice = ref<string | null>(null)
     const popupAnnouncement = ref<string | null>(null)
@@ -62,9 +62,9 @@ export const useConfigStore = defineStore('config', () => {
                 turnstileEnabled.value = config.turnstileEnabled || false
                 turnstileSiteKey.value = config.turnstileSiteKey || null
                 avatarApiBase.value = config.avatarApiBase || 'https://api.dicebear.com/9.x'
-                brandName.value = config.brandName?.trim() || 'Incudal'
-                brandSubtitle.value = config.brandSubtitle?.trim() || '基于 Incus 的低价 NAT VPS'
-                brandLogoUrl.value = config.brandLogoUrl?.trim() || '/incudal_logo.webp'
+                brandName.value = config.brandName?.trim() || 'HoyoVm'
+                brandSubtitle.value = config.brandSubtitle?.trim() || '全球多节点 NAT VPS 平台'
+                brandLogoUrl.value = config.brandLogoUrl?.trim() || '/hoyovm_logo.webp'
                 transferFee.value = config.transferFee || 0
                 footerContactEmail.value = config.footerContactEmail ?? null
                 footerTelegramLink.value = config.footerTelegramLink ?? null

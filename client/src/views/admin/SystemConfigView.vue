@@ -125,17 +125,17 @@ const form = ref({
   smtp_username: '',
   smtp_password: '',
   smtp_from_email: '',
-  smtp_from_name: 'Incudal',
-  brand_name: 'Incudal',
-  brand_subtitle: '基于 Incus 的低价 NAT VPS',
-  brand_logo_url: '/incudal_logo.webp',
+  smtp_from_name: 'HoyoVm',
+  brand_name: 'HoyoVm',
+  brand_subtitle: '全球多节点 NAT VPS 平台',
+  brand_logo_url: '/hoyovm_logo.webp',
   // 邮箱域名白名单配置
   email_domain_whitelist_enabled: false,
   email_allowed_domains: '',
   // 转移手续费配置
   transfer_fee: 0,
   // 侧边栏底部联系方式
-  footer_contact_email: 'incudal@sent.com',
+  footer_contact_email: 'support@hoyovm.com',
   // 工单图片 Lsky 配置
   ticket_image_lsky_base_url: '',
   ticket_image_lsky_token: '',
@@ -1356,7 +1356,7 @@ async function sendTestEmail() {
                 v-model="form.brand_name"
                 type="text"
                 class="input"
-                placeholder="Incudal"
+                placeholder="HoyoVm"
               />
             </div>
             <div class="space-y-2">
@@ -1379,7 +1379,7 @@ async function sendTestEmail() {
                 v-model="form.brand_logo_url"
                 type="text"
                 class="input font-mono"
-                placeholder="/incudal_logo.webp"
+                placeholder="/hoyovm_logo.webp"
               />
               <p class="text-xs text-themed-muted">{{ t('admin.system.brand.logoDesc') || '支持 http(s) 图片地址或站点内绝对路径。' }}</p>
             </div>
@@ -1986,7 +1986,7 @@ async function sendTestEmail() {
                 v-model="form.smtp_from_name"
                 type="text"
                 class="input"
-                placeholder="Incudal"
+                placeholder="HoyoVm"
               />
             </div>
           </div>

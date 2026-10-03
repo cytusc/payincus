@@ -5,13 +5,13 @@ export function useBrand() {
 
   return {
     get brandName() {
-      return configStore.brandName?.trim() || 'Incudal'
+      return configStore.brandName?.trim() || 'HoyoVm'
     },
     get brandSubtitle() {
-      return configStore.brandSubtitle?.trim() || '基于 Incus 的低价 NAT VPS'
+      return configStore.brandSubtitle?.trim() || '全球多节点 NAT VPS 平台'
     },
     get brandLogoUrl() {
-      return configStore.brandLogoUrl?.trim() || '/incudal_logo.webp'
+      return configStore.brandLogoUrl?.trim() || '/hoyovm_logo.webp'
     }
   }
 }

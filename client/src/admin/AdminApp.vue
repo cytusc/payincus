@@ -31,7 +31,7 @@ watchEffect(() => {
   const translatedTitle = titleKey ? t(titleKey) : ''
   const pageTitle = translatedTitle && translatedTitle !== titleKey ? translatedTitle : fallbackTitle
 
-  const brandName = configStore.brandName?.trim() || 'Incudal'
+  const brandName = configStore.brandName?.trim() || 'HoyoVm'
   document.title = pageTitle ? `${brandName} - ${pageTitle}` : `${brandName} - ${t('common.adminPanel')}`
 })
 

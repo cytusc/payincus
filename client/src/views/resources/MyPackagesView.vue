@@ -1289,7 +1289,7 @@ function getBillingCycleLabel(months: number): string {
                   <input v-model="planForm.description" type="text" class="input" :placeholder="t('resources.plans.descriptionPlaceholder')" />
                 </div>
               </div>
-              <p class="text-xs text-orange-500 dark:text-orange-400 -mt-2">{{ t('common.noIncudalHint') }}</p>
+              <p class="text-xs text-orange-500 dark:text-orange-400 -mt-2">{{ t('common.noBrandHint') }}</p>
 
               <!-- 资源配置 -->
               <div class="rounded-xl border border-themed bg-themed-tertiary p-4">
