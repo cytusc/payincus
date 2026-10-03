@@ -7,7 +7,7 @@ import { ref, watch, computed, type Ref } from 'vue'
 type ThemeMode = 'light' | 'dark' | 'system'
 
 export const useThemeStore = defineStore('theme', () => {
-  const mode: Ref<ThemeMode> = ref((localStorage.getItem('theme') as ThemeMode) || 'system')
+  const mode: Ref<ThemeMode> = ref((localStorage.getItem('theme') as ThemeMode) || 'light')
 
   const resolvedTheme = computed(() => {
     if (mode.value === 'system') {

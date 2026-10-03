@@ -10,8 +10,8 @@ const steps = ['select', 'deploy', 'connect'] as const
 </script>
 
 <template>
-  <section class="home-deploy" aria-labelledby="home-deploy-title">
-    <div class="home-section-inner">
+  <section class="home-section-inner home-deploy" aria-labelledby="home-deploy-title">
+    <div class="home-deploy-content">
       <h2 id="home-deploy-title">{{ t('publicSite.cloud.deployTitle') }}</h2>
       <p class="home-section-intro">{{ t('publicSite.cloud.deployDescription') }}</p>
       <ol class="home-deploy-steps">
@@ -40,12 +40,14 @@ const steps = ['select', 'deploy', 'connect'] as const
 
 <style scoped>
 .home-section-inner { width: min(1200px, calc(100% - 64px)); margin-inline: auto; }
-.home-deploy { padding-block: 76px 80px; background: var(--kawaii-surface-soft); text-align: center; }
+.home-deploy { padding: 56px 40px; border: 1px solid var(--kawaii-line); border-radius: 22px; background: var(--kawaii-surface-soft); text-align: center; }
+.home-deploy-content { max-width: 1080px; margin-inline: auto; }
+.cloud-capabilities + .home-deploy { margin-top: 64px; }
 .home-deploy h2, .home-cta h2 { font-size: clamp(26px, 3vw, 36px); font-weight: 600; letter-spacing: -.04em; line-height: 1.4; text-wrap: balance; }
 .home-section-intro { margin-top: 14px; color: var(--kawaii-muted); font-size: 14px; line-height: 1.8; }
-.home-deploy-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 64px; margin-top: 40px; list-style: none; padding: 0; }
-.home-deploy-step { position: relative; }
-.home-deploy-step:not(:last-child)::after { content: ''; position: absolute; top: 79px; left: calc(100% - 22px); width: 108px; border-top: 1px dashed var(--kawaii-line-strong); }
+.home-deploy-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 36px; list-style: none; padding: 0; }
+.home-deploy-step { min-width: 0; padding-inline: 28px; }
+.home-deploy-step + .home-deploy-step { border-left: 1px solid var(--kawaii-line); }
 .home-deploy-image { display: block; width: 210px; max-width: 100%; height: 140px; margin-inline: auto; }
 .home-step-number { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 1px solid var(--kawaii-line-strong); border-radius: 50%; font-size: 11px; margin-block: 22px 14px; }
 .home-deploy-step h3 { font-size: 19px; font-weight: 600; }
@@ -56,11 +58,14 @@ const steps = ['select', 'deploy', 'connect'] as const
 .home-cta-content p { max-width: 480px; margin: 18px auto 28px; color: var(--kawaii-muted); font-size: 15px; line-height: 1.85; text-wrap: pretty; }
 .home-cta-art { position: absolute; z-index: -1; width: 350px; bottom: -48px; opacity: .18; --illustration-surface: var(--kawaii-surface-soft); pointer-events: none; }
 .home-cta-art-left { left: -70px; transform: rotate(-12deg); }.home-cta-art-right { right: -72px; transform: rotate(12deg); }
-@media (max-width: 1050px) { .home-deploy-steps { gap: 32px; }.home-deploy-step:not(:last-child)::after { left: 100%; width: 32px; }.home-cta-art { width: 280px; opacity: .12; } }
+@media (max-width: 1050px) { .home-deploy { padding-inline: 24px; }.home-deploy-step { padding-inline: 20px; }.home-cta-art { width: 280px; opacity: .12; } }
 @media (max-width: 760px) {
-  .home-section-inner { width: calc(100% - 40px); }.home-deploy { padding-block: 48px; }
-  .home-deploy-steps { grid-template-columns: 1fr; gap: 36px; margin-top: 28px; }
-  .home-deploy-step:not(:last-child)::after { display: none; }.home-step-number { margin-top: 10px; }
+  .home-section-inner { width: calc(100% - 40px); }.home-deploy { padding: 36px 22px; border-radius: 18px; }
+  .cloud-capabilities + .home-deploy { margin-top: 48px; }
+  .home-deploy-steps { grid-template-columns: 1fr; gap: 28px; margin-top: 28px; }
+  .home-deploy-step { padding-inline: 0; }
+  .home-deploy-step + .home-deploy-step { padding-top: 28px; border-left: 0; border-top: 1px solid var(--kawaii-line); }
+  .home-deploy-image { width: 180px; height: 120px; }.home-step-number { margin-top: 10px; }
   .home-cta { padding-block: 40px; }.home-cta-card { padding: 40px 22px; border-radius: 18px; }.home-cta-art { display: none; }
 }
 </style>
